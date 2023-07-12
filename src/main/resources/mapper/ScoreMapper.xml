@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newdmsp.demo.dao.ScoreMapper">
+
+
+    <insert id="addScore" parameterType="com.newdmsp.demo.entity.Score" keyProperty="id" useGeneratedKeys="true">
+        insert into score(record_id, video_desc_score, data_desc_score, exp_process_score, exp_result_score,
+                          experience_score, record_code_score, total_desc_score, create_time)
+        values (#{recordId}, #{videoDescScore}, #{dataDescScore}, #{expProcessScore}, #{expResultScore},
+                #{experienceScore}, #{recordCodeScore}, #{totalDescScore}, #{createTime})
+    </insert>
+    <update id="updateScore">
+        update score
+        set video_desc_score  = #{videoDescScore},
+            data_desc_score   = #{dataDescScore},
+            exp_process_score = #{expProcessScore},
+            exp_result_score  = #{expResultScore},
+            experience_score  = #{experienceScore},
+            record_code_score = #{recordCodeScore},
+            total_desc_score  = #{totalDescScore},
+            last_time         = #{lastTime}
+        where id = #{id}
+    </update>
+    <select id="getDetailScore" resultType="com.newdmsp.demo.entity.Score">
+        select *
+        from score
+        where record_id = #{recordId}
+    </select>
+</mapper>
+

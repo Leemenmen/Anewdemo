@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>数据挖掘虚拟仿真实验平台</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>-->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <style>
+        .index {
+            width: 10%;
+        }
+
+        #tableStuDes td {
+            font-size: 18px;
+
+        }
+        a{
+            color: green;
+        }
+        .word{
+            color: grey;
+        }
+    </style>
+</head>
+<body>
+
+<!--未提交显示-->
+<div class="layui-row" id="uprecord"
+     style="width: 900px; padding: 20px; margin: auto auto; background-color: #f2f2f2;display: none;overflow: auto">
+    <form class="layui-form" action="" id="upForm" method="POST">
+
+        <div class="layui-col-md7 layui-col-space10 " style="font-size: 15px;">
+            <input id="recordId1" value="0" type="hidden" name="id">
+            <input id="png" value="0" type="hidden" name="png">
+            <input id="csv" value="0" type="hidden" name="csv">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">实验名称</label>
+                <div class="layui-input-inline" style="width: 65%">
+                    <input id="expname" type="text" name="expname"
+                           readonly="true" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">实验任务</label>
+                <div class="layui-input-inline">
+                    <textarea style="width: 700px;height: 100px;" type="text"
+                              name="exptarget" id="exptarget"
+                              readonly="true"
+                              autocomplete="off" class="layui-input"
+                              rows=80 cols=120>
+                    </textarea>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">实验过程与效果分析</label>
+                <div class="layui-input-inline" style="width: 45%">
+                    <textarea id="expprocess" lay-verify="required" type="text" name="expprocess"
+                              oninput="wordLeg(this);" maxlength="5000"
+                              placeholder="请输入描述实验过程，说明是否达到目的，若未达到，请分析原因。字数不超过5000字" autocomplete="off"
+                              style="width: 700px;height: 180px;"
+                              class="layui-input" rows=80 cols=120
+                              onpropertychange="this.style.posHeight=this.scrollHeight;if(value.length>5000) value=value.substr(0,5000) "></textarea>
+                    <div class="word" style="margin-left: 280%"><span class="expprocess_count">0</span>&nbsp;/&nbsp;<span class="num_count" id="numCount">5000</span></div>
+
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">实验结果</label>
+                <div class="layui-input-inline" style="width: 45%">
+                    <textarea id="expresult" lay-verify="required" type="text" name="expresult"
+                              oninput="wordLeg(this);" maxlength="5000"
+                              placeholder="请输入实验结果，若存在附件，请尽量避免输入与附件重复。字数不超过5000字" autocomplete="off"
+                              style="width: 700px;height: 80px;"
+                              class="layui-input" rows=80 cols=120
+                              onpropertychange="this.style.posHeight=this.scrollHeight;if(value.length>5000) value=value.substr(0,5000) "></textarea>
+                    <div class="word" style="margin-left: 280%"><span class="expresult_count">0</span>&nbsp;/&nbsp;<span class="num_count">5000</span></div>
+
+                    <button type="button" class="layui-btn" id="resultButton"
+                            style="margin-left: 600px;margin-top:10px">结果附件
+                    </button>
+                    <div style="width:700px;text-align:right;color:gray;font-size:14px">附件类型：png、csv</div>
+
+                    <div class="layui-form-item" id="reTable"
+                         style="display: none;width: 43%;margin-top: 1%;margin-left: 200%">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>附件名</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="reList"></tbody>
+                        </table>
+                    </div>
+                    <div class="layui-form-item" id="fileTable"
+                         style="display: none;width: 43%;margin-top: 1%;margin-left: 7%">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>附件名</th>
+                                <th>大小</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="demoList"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">心得与体会</label>
+                <div class="layui-input-inline" style="width: 45%">
+                    <textarea id="expExperience" lay-verify="required" type="text" name="experience"
+                              oninput="wordLeg(this);" maxlength="5000"
+                              placeholder="请输入本次实验心得与体会。字数不超过5000字" autocomplete="off"
+                              style="width: 700px;height: 180px;"
+                              class="layui-input" rows=80 cols=120
+                              onpropertychange="this.style.posHeight=this.scrollHeight;if(value.length>5000) value=value.substr(0,5000) "></textarea>
+                    <div class="word" style="margin-left: 280%"><span class="expExperience_count">0</span>&nbsp;/&nbsp;<span class="num_count">5000</span></div>
+
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item layui-upload" >
+
+                <label class="layui-form-label">上传代码</label>
+                <div class="layui-input-inline" style="width:120px">
+
+                    <button type="button" class="layui-btn" id="test1" style="margin-left: 20px">选择代码</button>
+                    <!--                    <button id="hideUpload" type="button" style="display: none"></button>-->
+                </div>
+                <div class="layui-input-inline" style="color:gray;margin-top:15px;font-size:14px">文件类型：py</div>
+
+            </div>
+
+        </div>
+
+        <div class="layui-form-item layui-row">
+
+
+            <div class="layui-input-block" style="margin-top:25px;display:flex;float:right">
+
+                <button type="button" class="layui-btn" id="testListAction" style="display: none">开始上传</button>
+
+
+                <button class="layui-btn layui-inline layui-bg-red" lay-submit lay-filter="submit" id="uploadFileBtn2"
+                        style="margin-left:10px;width: 150px">
+                    保存
+                </button>
+
+                <button class="layui-btn layui-bg-green " onclick="backSubmit()" id="backSub"
+                        style="width: 150px;display: none">
+                    返回提交
+                </button>
+
+
+
+                <!--                <button class="layui-btn layui-inline" type="button" lay-submit="" lay-filter="preLook"-->
+                <!--                        style="width: 100px">-->
+                <!--                    预览-->
+                <!--                </button>-->
+            </div>
+        </div>
+    </form>
+
+</div>
+
+
+<!--提交后显示-->
+<div class="layui-card-body " style="display: none" id="showrecord">
+    <input id="recordSubmit1" value="0" type="hidden">
+    <table class="layui-table" id="tableStuDes">
+        <tr>
+            <td class="index">学号</td>
+            <td th:text="${session.loginUser.getUsername()}"></td>
+            <td class="index">姓名</td>
+            <td th:text="${session.loginUser.getRealname()}"></td>
+            <td class="index" id="fenShu" style="display: none">分数</td>
+            <td id="score0" style="display: none"></td>
+
+        </tr>
+    </table>
+    <table class="layui-table" style="white-space: pre-line;table-layout: fixed">
+        <tr>
+            <td class="index">实验任务</td>
+            <td id="work"></td>
+        </tr>
+
+        <tr>
+            <td class="index">实验过程与效果分析</td>
+            <td id="process"></td>
+        </tr>
+
+        <tr>
+            <td class="index">实验结果</td>
+            <td id="result"></td>
+        </tr>
+        <tr>
+            <td class="index">心得与体会</td>
+            <td id="expri"></td>
+        </tr>
+        <tr>
+            <td class="index">实验代码</td>
+            <code>
+                <td id="code">
+
+                </td>
+            </code>
+        </tr>
+
+    </table>
+    <div id="buttons" style="display: none">
+        <button class="layui-btn layui-bg-green " onclick="changeRecord1()"
+                style="width: 200px">
+            点击修改
+        </button>
+
+        <button class="layui-btn layui-bg-green " onclick="submitRecord1()"
+                style="width: 200px">
+            立即提交
+        </button>
+    </div>
+
+
+</div>
+
+
+</body>
+
+
+<script th:inline="javascript">
+
+    var files = [];
+    var simpleFile = [];
+    var lookFile;
+    var flag;
+    var userName = [[${session.loginUser.getUsername()}]]
+    var deleteStr = '';
+
+
+    function changeRecord1() {
+        $("#uprecord").css('display', 'block')
+        $("#backSub").css('display','inline')
+
+        $("#showrecord").css('display', 'none')
+        if ($("#recordId1").val() !== 0) {
+
+            $("#test1").html("替换代码")
+            $("#uploadFileBtn2").html("确认修改")
+        }
+    }
+
+    function backSubmit(){
+        $("#uprecord").css('display', 'none')
+        $("#showrecord").css('display', 'block')
+    }
+
+
+    function submitRecord1() {
+
+        id = $("#recordSubmit1").val()
+        layer.confirm("注意：报告提交后则不能修改！！！", {
+            icon: 4,
+            title: "提交报告",
+            btn: ['确认', '取消']
+        }, function (index) {
+            $.post("/submitRecord/" + id, function (res) {
+                if (res.code === 200) {
+                    layer.msg('提交成功，等待教师评阅', {icon: 6, time: 1500})
+                    location.reload()
+                } else {
+                    layer.msg('请稍后重试', {icon: 5, time: 1000})
+                }
+
+            })
+            layer.close(index)
+        })
+
+    }
+
+    function deleteReApped(name){
+        // $(name).css('display','none')
+            $("#"+name).hide();
+        if (deleteStr == ''){
+            deleteStr = name
+        }else {
+            // console.log("deleteStr不等于空")
+            deleteStr += ','+name
+        }
+        // console.log(deleteStr)
+    }
+
+
+    layui.use(["upload", "form"], function () {
+
+        var upload = layui.upload,
+            form = layui.form;
+        expId = getQueryString("expid")
+
+        $.get("/findRecord/" + expId, function (res) {
+
+            if (res.code === 200) {
+                // console.log(res.data)
+                // 若有过保存记录，默认显示表格
+                if (res.data) {
+
+                    str = 'stuRecord/' + [[${session.loginUser.getGname()}]] + '_' + res.data.expname + '/' + res.data.recordcode
+
+                    // 填充表单
+                    $("#expname").val(getQueryString('expName'))
+                    $("#exptarget").val(res.data.expwork)
+                    $("#expprocess").val(res.data.expprocess)
+                    $(".expprocess_count").text(res.data.expprocess.length)
+                    $("#expresult").val(res.data.expresult)
+                    $(".expresult_count").text(res.data.expresult.length)
+                    $("#expExperience").val(res.data.experience)
+                    $(".expExperience_count").text(res.data.experience.length)
+                    $("#recordId1").val(res.data.id)
+                    $("#png").val(res.data.png)
+                    $("#csv").val(res.data.csv)
+
+                    let uploadBox = $('#test1').parent();
+                    uploadBox.append('   <a onclick="xadmin.open(\'预览代码\',\'add_lookshare.html?storagePath=' + str + '&flag=0\',950,650)" title="查看"  href="javascript:;">' +
+                        '          <span>' + res.data.recordcode + '</span>' +
+                        '   </a>');
+
+                    $("#reTable").css('display','block')
+                    reHtml = ''
+                    for (p=0;p<(res.data.png+res.data.csv);p++){
+                        if (p<res.data.png){
+                            reHtml+='<tr id="png'+p+'">' +
+                                '<td>附件'+(p+1)+'</td>'+
+                                '<td style="color: green">'+
+                                '   <a  style="margin-right:15px" onclick="xadmin.open(\'查看图片\',\'simple_preLookResultAppend.html?expName=' + getQueryString('expName') + '&flag=0&index=' + p + '\',950,650)" title="查看"  href="javascript:;">' +
+                                '          <span>查看</span>' +
+                                '   </a>'+
+                                '<a  onclick="deleteReApped(\'png'+p+'\')">删除</a>'+
+                                '</td></tr>'
+                        }else {
+                            reHtml+='<tr id="csv'+(p-res.data.png)+'">' +
+                                '<td >附件'+(p+1)+'</td><td style="color: green">'+
+                                '   <a style="margin-right:15px" onclick="xadmin.open(\'查看数据\',\'simple_preLookResultAppend.html?expName=' + getQueryString('expName') + '&flag=1&index=' + (p-res.data.png) + '\',950,650)" title="查看"  href="javascript:;">' +
+                                '          <span>查看</span>' +
+                                '   </a>'+
+                                '<a  onclick="deleteReApped(\'csv'+(p-res.data.png)+'\')">删除</a></td></tr>'
+
+                        }
+                    }
+                    $("#reList").html(reHtml)
+
+
+                    $("#uprecord").css('display', 'none')//隐藏表单
+                    $("#showrecord").css('display', 'block')//显示表格
+                    // 填充表格
+                    $("#work").html(res.data.expwork)
+                    $("#process").html(res.data.expprocess)
+                    $("#result").html(res.data.expresult)
+                    $("#expri").html(res.data.experience)
+                    $("#recordSubmit1").val(res.data.id)
+
+
+                    // 查看实验报告中的代码
+                    // path = encodeURIComponent(encodeURIComponent(str))
+                    html = '   <a onclick="xadmin.open(\'查看代码\',\'add_lookshare.html?storagePath=' + str + '&flag=0\',950,650)" title="查看"  href="javascript:;">' +
+                        '          <span>' + res.data.recordcode + '</span>' +
+                        '   </a>'
+                    $("#code").html(html)
+
+                    html1 = ''
+                    for (m = 0; m < res.data.png; m++) {
+                        html1 += '   <a onclick="xadmin.open(\'查看图片\',\'simple_preLookResultAppend.html?expName=' + getQueryString('expName') + '&flag=0&index=' + m + '\',950,650)" title="查看"  href="javascript:;">' +
+                            '          <span>图片附件'+(m+1)+ '</span>' +
+                            '   </a>'
+                    }
+                    for (n = 0; n < res.data.csv; n++) {
+                        html1 += '   <a onclick="xadmin.open(\'查看数据\',\'simple_preLookResultAppend.html?expName=' + getQueryString('expName') + '&flag=1&index=' + n + '\',950,650)" title="查看"  href="javascript:;">' +
+                            '          <span>数据集附件'+(n+1)+ '</span>' +
+                            '   </a>'
+                    }
+                    $("#result").append('<br>'+html1)
+
+                    // flag = 0表示保存，1表示已经提交
+                    if (res.data.flag === 1) {
+                        // console.log(res.data.score)
+                        $("#fenShu").css('display', '')
+                        $("#score0").css('display', '')
+                        if (res.data.score) {
+                            $("#score0").html(res.data.score)
+                        } else {
+                            $("#score0").html("未打分")
+                        }
+                    } else {
+                        // 显示 返回修改 和 立即提交 按钮
+                        $("#buttons").css('display', 'block')
+                    }
+                } else {
+                    $("#uprecord").css('display', 'block')//显示div
+                    $("#showrecord").css('display', 'none')//隐藏div
+                    InitRecord(expId)
+
+                }
+            } else {
+                layer.msg("失败");
+            }
+        })
+
+
+        //添加结果附件
+        var demoListView = $('#demoList')
+            , uploadListIns = upload.render({
+            elem: '#resultButton'
+            , accept: 'file'
+            , exts: 'png|csv'
+            , multiple: true
+            , auto: false
+            , bindAction: '#testListAction'
+            , choose: function (obj) {
+                files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                if (Object.keys(files).length > 0) {
+                    $("#fileTable").css('display', 'block')
+                    $("#resultButton").html("<i\n" +
+                        "                            class=\"layui-icon\"></i>继续上传")
+                }
+
+                //读取本地文件
+                obj.preview(function (index, file, result) {
+                    var tr = $(['<tr id="upload-' + index + '">'
+                        , '<td>' + file.name + '</td>'
+                        , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                        , '<td>'
+                        , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                        , '</td>'
+                        , '</tr>'].join(''));
+
+                    //单个重传
+                    tr.find('.demo-reload').on('click', function () {
+                        obj.upload(index, file);
+                    });
+
+                    //删除
+                    tr.find('.demo-delete').on('click', function () {
+                        delete files[index]; //删除对应的文件
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                    });
+
+                    demoListView.append(tr);
+                });
+            }
+        });
+
+        //添加代码
+        upload.render({
+            elem: '#test1'
+            , accept: 'file'
+            , exts: 'py'
+            , multiple: false
+            , auto: false
+            , bindAction: '#testListAction'
+            , choose: function (obj) {
+                simpleFile = this.simpleFile = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //将每次选择的文件追加到文件队列
+                simpleFile = obj.pushFile();
+                // 清空,防止多次上传
+                for (let k in simpleFile) {
+                    delete simpleFile[k];
+                }
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+
+                obj.preview(function (index, file, result) {
+                    obj.pushFile();// 再添加
+                    let fileBox = $('#test1').parent();
+                    fileBox.find('.layui-upload-choose').remove();
+                    fileBox.append(`<span class="layui-inline layui-upload-choose">${file.name}</span>`);
+                    // files[0] = file
+                });
+            }
+        });
+
+
+        function InitRecord(expId) {
+
+            // tag 为 0 表示没填写实验报告
+            // tag 为 1 表示expRecord中已经存在之前，对内容进行修改
+            $.post("/getExpsByExpId/" + expId, function (res) {
+                if (res.code === 200) {
+
+                    $("input[name=expname]").val(res.data.expname);
+                    $("textarea[name=exptarget]").val(res.data.expwork);
+
+                } else {
+                    layer.msg("系统繁忙，稍后重试")
+                }
+            })
+        }
+
+
+
+
+
+        //监听提交
+        form.on('submit(submit)', function (data) {
+
+
+            if (data.field.expprocess.length>5000){
+                layer.msg("实验过程与效果分析字数超出限制！！！")
+                return false
+            }
+
+            if (data.field.experience.length>5000){
+                layer.msg("心得与体会字数超出限制！！！")
+                return false
+            }
+            if (data.field.expresult.length>5000){
+                layer.msg("实验结果字数超出限制！！！")
+                return false
+            }
+
+            // 第一次填写实验报告
+            if (Object.keys(simpleFile).length > 0 || data.field.id > 0) {
+
+                flag = 0;
+
+                // $('#hideUpload').trigger('click');
+                $('#testListAction').trigger('click');
+
+
+
+                // 第一次保存代码时没有选择代码
+            } else {
+                layer.msg("上传代码不能为空!", {icon: 5, time: 1000})
+            }
+            return false;
+        });
+
+        // 提交到后台
+        $("#testListAction").on("click", function () {
+
+            var form = new FormData(document.getElementById("upForm"));
+            for (let i in files) {
+                form.append("files", files[i]);
+            }
+            // form.append("files", simpleFile)
+
+            form.append("file", simpleFile);
+            form.append("deleteReName", deleteStr);
+            form.append("expid",expId);
+            form.append("flag",0);
+            // var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+            $.ajax({
+                url: '/addUploadTotalRecord',
+                type: "post",
+                dataType: "json",
+                async: false,
+                contentType: false,
+                processData: false,
+                data: form,
+                success: function (result) {
+
+                    if (result.code == 200) {
+                        // console.log("成功")
+                        layer.msg("保存成功！");
+                        location.reload();
+                    }else {
+                        layer.msg(result.msg, {time:5000});
+                    }
+                },
+                error: function (result){
+                    layer.msg(result.msg, {time:5000})
+                }
+            })
+        });
+
+
+
+    });
+
+
+</script>
+</html>

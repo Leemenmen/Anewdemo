@@ -1,0 +1,14 @@
+
+server:
+  port: 8001
+spring:
+  datasource:
+    url: ENC(DDV2nhflvykMbCimgfPfqe8EmAreiGwdinhP8KKg1gWBK/7f756ePeer87NvxaLTknb6Az9SFG0PYoJvkFAWhQVxwKVrK9JsMWmSJCIe8bkrNunx4cN+dRzcAUxZ12SqDEL8e/KO/mF6LEiqqgTp3F9C7bchU1t8gUXINs3rPCVq+GpEL60w3JaZ8J6nxXD1)
+    username: ENC(FSguFLlJ8md5jlSfM2N7rKS66dI3hZnn2pA4x8LC/PHKC44VYlEgE1ViuLxw2l2n)
+    password: ENC(wk1SFfQ8GbDpNBuTiMultxOe7L0PC9nwT2R6YPfi9qYcIcMx6LkcBjMUQd49P81J)
+jasypt:
+  encryptor:
+    # 加密的盐值，为了安全，该配置可以放在启动参数或者命令行参数中
+    password: wdjwijoq3i198hfurh94024hi2heh18
+    # 加密所采用的算法
+    algorithm: PBEWITHHMACSHA512ANDAES_256

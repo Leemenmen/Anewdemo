@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.newdmsp.demo.dao.UserMapper">
+    <insert id="addTgrade" keyProperty="id" parameterType="com.newdmsp.demo.entity.Tgrade" useGeneratedKeys="true">
+        insert into gtoe (gid, expid)
+        values (#{gradeid}, #{expid})
+    </insert>
+    <insert id="addUser" parameterType="com.newdmsp.demo.entity.User" keyProperty="id" useGeneratedKeys="true">
+        insert into user (username,realname,gradeid,enable)
+        values (#{username},#{realname},#{gradeid},1)
+    </insert>
+    <update id="updateUser1" parameterType="com.newdmsp.demo.entity.User">
+        update user
+        <set>
+            <if test="password==null and username.length()==0">password = '123',</if>
+            <if test="password!=null and password.length()>0">password = #{password},</if>
+            <if test="realname!=null and realname.length()>0">realname = #{realname},</if>
+            <if test="username!=null and username.length()>0">username = #{username},</if>
+            <if test="enable == 0">enable = #{enable},</if>
+        </set>
+        where id = #{id}
+
+    </update>
+    <update id="updateUser" parameterType="com.newdmsp.demo.entity.User">
+        update user
+        set password = '123'
+        where id = #{id}
+
+    </update>
+
+    <update id="banStu" parameterType="com.newdmsp.demo.entity.User">
+        update user
+        set enable = #{enable}, password = #{password}
+        where id = #{id}
+
+    </update>
+
+
+    <select id="UserExisted" resultType="java.lang.Integer" parameterType="com.newdmsp.demo.entity.User">
+        SELECT count(*)
+        FROM user
+        where username = #{username}
+          and password = #{password}
+    </select>
+    <select id="getUserInfo" resultType="com.newdmsp.demo.entity.User">
+        select *
+        from user
+        where username = #{username}
+          and password = #{password}
+    </select>
+    <select id="getTeachUserInfo" resultType="com.newdmsp.demo.entity.User">
+        select u.*, g.id gid, g.gname
+        from grade g,
+             user u
+        where u.id = g.tid
+          and u.id = #{id}
+    </select>
+    <select id="getNumGtoe" resultType="java.lang.Integer" parameterType="integer">
+        SELECT count(*)
+        from gtoe ge
+        where ge.expid = #{expid}
+    </select>
+    <select id="getGtoeTgrades" resultType="com.newdmsp.demo.entity.Tgrade">
+        SELECT *
+        from (
+                 SELECT tg.tid id, tg.id gradeid, tg.gname, ge.id geid, ge.expid
+                 from (select g.*
+                       from grade g,
+                            user u
+                       where u.id = g.tid
+                         and u.id = #{tid}) tg
+                          LEFT JOIN
+                      gtoe ge
+                      on tg.id = ge.gid) a
+        where expid = #{expid}
+
+    </select>
+    <select id="getUsers" resultType="com.newdmsp.demo.entity.User">
+        select * from user
+        <where>
+            gradeid = #{gradeid}
+            <if test="username.length()>0 and username!='null'">and (username like concat(concat('%',#{username}),'%') and gradeid=#{gradeid})
+                or (realname like concat(concat('%',#{username},'%')) and gradeid=#{gradeid})
+            </if>
+        </where>
+    </select>
+    <select id="getGtoe" resultType="com.newdmsp.demo.entity.Record">
+        select ep.*,u.id uid,u.username,u.realname
+        from
+                (select * from exprecord ep where ep.expid=#{expid}) ep  right JOIN user u
+                                                                             on u.id = ep.sid
+        where u.gradeid=#{gid}
+    </select>
+
+
+
+
+    <select id="getUsersByGradePage" resultType="com.newdmsp.demo.entity.User">
+        select * from user
+        <where>
+            gradeid = #{data.gradeid}
+            <if test="data.username.length()>0 and data.username!='null'">and (username like concat(concat('%',#{data.username}),'%') and gradeid=#{data.gradeid})
+                or (realname like concat(concat('%',#{data.username},'%')) and gradeid=#{data.gradeid})
+            </if>
+        </where>
+        limit #{beginIndex}, #{pageSize}
+
+    </select>
+    <select id="getUsersByGradePageTotals" resultType="java.lang.Integer">
+        select count(*) from user
+        <where>
+            gradeid = #{data.gradeid}
+            <if test="data.username.length()>0 and data.username!='null'">and (username like concat(concat('%',#{data.username}),'%') and gradeid=#{data.gradeid})
+                or (realname like concat(concat('%',#{data.username},'%')) and gradeid=#{data.gradeid})
+            </if>
+        </where>
+    </select>
+
+</mapper>

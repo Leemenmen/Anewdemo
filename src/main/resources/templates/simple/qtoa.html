@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+</head>
+
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-side" style="width:85%;margin-left:2%;margin-top: 1%;">
+
+        <div class="layui-row">
+            <form class="layui-form" id="question" method="post" onsubmit="return false">
+                <div class="layui-form-item">
+                    <textarea lay-verify="required" placeholder="请输入问题" class="layui-textarea"
+                              name="question"></textarea>
+                </div>
+                <input name="sid" th:value="${session.loginUser.getId()}" type="hidden">
+                <div class="layui-form-item" style="margin-top: 20px;">
+                    <button type="submit" class="layui-btn" lay-submit lay-filter="submit"
+                            style="width: 12%;margin-right: 3%;">提交
+                    </button>
+                    <button type="reset" class="layui-btn layui-btn-primary" style="width: 12%;">重置</button>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="layui-collapse" style="margin-top: 1%;" id="qtoa">
+
+        </div>
+    </div>
+</div>
+</body>
+
+<script th:inline="javascript">
+    // 用于标识是否显示 div , 在需 寻求帮助和提问 按钮中有设置
+    qflag = getQueryString("qflag");
+    if (qflag === '0') {
+        $("#qtoa").css('display', 'none')
+    }
+    var qtoa = {
+        "sid": [[${session.loginUser.getId()}]],
+    }
+    // getQtoa(qtoa);
+    html = '';
+    answer = ''
+    layui.use(['form', 'layer', 'element'], function () {
+        $ = layui.jquery;
+        var form = layui.form,
+            layer = layui.layer,
+            element = layui.element;
+
+        getQtoa(qtoa, element);
+        // $.get("/qToa", qtoa, function (res) {
+        //     // console.log(res);
+        //     if (res.code == 200) {
+        //
+        //         if (res.datas.length > 0) {
+        //             $.each(res.datas, function (i, item) {
+        //                 if (item.answer === '') {
+        //                     answer = '未回答'
+        //                 } else {
+        //                     answer = item.answer
+        //                 }
+        //                 html +=
+        //                     ' <div class="layui-colla-item">' +
+        //                     '      <h4 class="layui-colla-title">问题' + (i + 1) + ':&nbsp' + item.question + '</h4>' +
+        //                     '      <div class="layui-colla-content" id="answer" style="white-space: pre-line;font-size: 16px;">' + answer +
+        //                     '      </div>' +
+        //                     '</div>';
+        //             });
+        //         }
+        //         // console.log(html)
+        //         $("#qtoa").html(html);
+        //         element.render('layui-collapse');
+        //     }
+        // }, "json");
+
+        form.on('submit(submit)', function (data) {
+
+            $.post("/question", data.field, function (res) {
+                // console.log(res)
+                if (res.code === 200) {
+                    document.getElementById("question").reset();
+                    if (qflag === '0') {
+                        layer.msg('提问成功', {time: '600'}, function () {
+                            x_admin_close();
+                        });
+                    }else {
+                        layer.msg('提交成功', {time: '600'})
+                    }
+                    getQtoa(qtoa, element);
+
+                } else {
+                    // document.getElementById("question").reset();
+                    layer.msg('提问失败，请稍后重试！');
+                }
+            })
+
+            return false;
+
+        })
+
+    })
+
+
+</script>
+<!--<script>-->
+<!--    //js-->
+<!--    layui.use(['form', 'layer'], function () {-->
+<!--        $ = layui.jquery;-->
+<!--        var form = layui.form-->
+<!--            , layer = layui.layer;-->
+<!--        //监听提交(对应按钮字段 lay-filter="add" 的操作)-->
+<!--        form.on('submit(add)', function (data) {-->
+<!--            data.field.gradeid = getQueryString("gradeid");-->
+<!--            // console.log(data.field)-->
+<!--            layer.confirm("确认添加？", {title: false, closeBtn: false, skin: 'layui-layer-molv'}, function (layno) {-->
+<!--                layer.close(layno);-->
+<!--                $.post("/addUser", data.field, function (res) {-->
+<!--                    if (res.code == 200) {-->
+<!--                        layer.msg("操作成功", {time: 500});-->
+<!--                        x_admin_close();-->
+<!--                        ///*关闭弹出框口*/-->
+<!--                        //function x_admin_close(){-->
+<!--                        //		var index = parent.layer.getFrameIndex(window.name);-->
+<!--                        //		parent.layer.close(index);-->
+<!--                        parent.getExp();//执行父层html文件中存在的函数-->
+<!--                    } else {-->
+<!--                        layer.msg("操作失败，请稍后重试")-->
+<!--                    }-->
+<!--                })-->
+<!--            })-->
+<!--            return false;//这行代码没有，则无法执行-->
+<!--        })-->
+
+<!--    })-->
+<!--</script>-->
+
+</html>

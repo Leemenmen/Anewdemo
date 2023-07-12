@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.newdmsp.demo.dao.HistoryMapper">
+
+
+    <select id="getHistory" resultType="com.newdmsp.demo.entity.History">
+        select *
+        from historycode
+
+    </select>
+    <select id="getHistoryByPage" resultType="com.newdmsp.demo.entity.History">
+        select h.*,e.expname
+        from
+             (select *  from historycode
+              where sid = #{data.id}
+              order by createtime desc
+                  limit #{beginIndex}, #{pageSize}) h left join exp e on h.expid=e.id
+
+    </select>
+    <select id="getHistoryByTotals" resultType="java.lang.Integer">
+        select count(*)
+        from historycode
+        where sid = #{data.id}
+    </select>
+</mapper>

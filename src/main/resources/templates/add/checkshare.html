@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script type="text/javascript" src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--></head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form" method="POST" style="margin-top: 5%;display: none" id="check">
+            <div class="layui-form-item">
+                <label class="layui-form-label">审批结果</label>
+                <div class="layui-input-block" style="width: 200px">
+                    <select name="tid" id="tid3" class="selector" lay-verify="required" lay-search="">
+                        <option value="">--全部--</option>
+                        <option value="0">审批未通过</option>
+                        <option value="1">审批通过</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    文件评价
+                </label>
+                <div class="layui-input-inline" id="scoreDes">
+                    <input type="text" name="flagDes" placeholder="请输入评价" autocomplete="off" lay-verify="required"
+                           class="layui-input" style="width: 200px"></div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    文件评分
+                </label>
+                <div class="layui-input-inline" id="sscore">
+                    <input type="text" name="teachScore" placeholder="请输入分数" autocomplete="off" lay-verify="number"
+                           class="layui-input" style="width: 200px"></div>
+            </div>
+
+
+            <input name="id" type="hidden" id="id">
+
+            <div class="layui-form-item" style="margin-top: 20px;" id="button">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="put" id="putButton"
+                            style="width: 25%;margin-right: 5%;">立即提交
+                    </button>
+                </div>
+            </div>
+        </form>
+
+
+        <div class="layui-container" id="checked" style="display: none;font-size:16px;">
+            <br>
+            <p>审批结果：<span id="tidNot3" style="color:#ff0000;"></span></p>
+            <br>
+            <p>文件评价：<span id="appraise"></span></p>
+            <br>
+            <p>文件打分：<span id="scored"></span></p>
+
+        </div>
+
+
+    </div>
+</div>
+<script th:inline="javascript">
+
+
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form
+            , layer = layui.layer
+
+
+        var id = getQueryString("id");
+        $("#id").val(id);
+        var tid = getQueryString("tid");
+        var teachScore = getQueryString("teachScore");
+        var flag = getQueryString("flag")
+        var flagDes = getQueryString("flagDes")
+
+        if (tid === '3') {
+            $("#check").css('display', 'block')
+        } else {
+            $("#checked").css('display', 'block')
+            if (tid === '0') {
+                $("#scored").html(teachScore)
+                $("#tidNot3").html('审批未通过')
+            }
+            if (tid === '1') {
+                $("#scored").html(teachScore)
+                $("#tidNot3").html('审批通过')
+            }
+            $("#appraise").html(flagDes)
+
+        }
+
+
+        //监听提交
+        form.on('submit(put)', function (data) {
+            $.post("/checkShare", data.field, function (res) {
+                if (res.code === 200) {
+
+                    layer.msg('审批成功', {icon: 6, time: '600'}, function () {
+                        xadmin.close();
+                        parent.getTestShare(flag, null, 3, [[${session.loginUser.getId()}]])
+                        // parent.getShare(flag);
+                    });
+                } else {
+                    layer.msg("回调失败")
+                }
+            });
+            return false;   //防止form的action提交
+        });
+
+    });
+
+
+</script>
+
+</body>
+
+</html>

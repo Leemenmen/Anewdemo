@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script type="text/javascript" src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--></head>
+
+<style>
+    .notice {
+        font-weight: bold;
+    }
+</style>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form" method="POST" style="margin-top: 3%;" id="resetForm">
+
+            <div>
+                <div class="layui-form-item">
+                    <label for="expname" class="layui-form-label">
+                        <span class="x-red">*</span>实验名称
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="expname" name="expname" required="" lay-verify="required"
+                               placeholder="请输入" autocomplete="off" class="layui-input" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top: 20px">
+                    <label for="exptarget" class="layui-form-label">
+                        <span class="x-red">*</span>实验目的
+                    </label>
+                    <div class="layui-input-inline">
+                    <textarea id="exptarget" name="exptarget" lay-verify="required" placeholder="请输入"
+                              class="layui-textarea" style="width: 700px;"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top: 20px">
+                    <label for="expwork" class="layui-form-label">
+                        <span class="x-red">*</span>实验任务
+                    </label>
+                    <div class="layui-input-inline">
+                    <textarea id="expwork" name="expwork" lay-verify="required" placeholder="请输入" class="layui-textarea"
+                              style="width: 700px;"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-upload" style="margin-top: 20px">
+
+                    <label for="expwork" class="layui-form-label">
+                        <span class="x-red">*</span>上传文件
+                    </label>
+                    <button type="button" id="testList" style="" class="layui-btn"><i
+                            class="layui-icon"></i>点击选择
+                    </button>
+                    <p style="margin-top: 5px">注意:&nbsp;有且只能有一个<span class="notice">代码文件</span>，文件类型支持<span class="notice">py</span>;&nbsp;&nbsp;<span
+                            class="notice">数据集文件</span>可以0个或多个，文件类型支持<span class="notice">xlsx,xls,csv</span></p>
+                    <button id="testAction" type="button" style="display: none"></button>
+                    <div class="layui-form-item" id="fileTable"
+                         style="display: none;width: 43%;margin-top: 1%;margin-left: 7%">
+                        <table class="layui-table">
+                            <thead>
+                            <tr>
+                                <th>文件名</th>
+                                <th>大小</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="demoList"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+
+                <input name="upid" th:value="${session.loginUser.getId()}" type="hidden">
+
+                <div class="layui-form-item" style="margin-top: 20px;">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit="" lay-filter="demo1" id="put"
+                                style="width: 20%;margin-right: 5%;">立即提交
+                        </button>
+                        <button type="reset" class="layui-btn layui-btn-primary" style="width: 20%"
+                                onclick="resetForm(files)">
+                            重&nbsp;&nbsp;置
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+
+</div>
+<script>
+    layui.use(['upload', 'form'], function () {
+        var $ = layui.jquery
+            , upload = layui.upload
+            , form = layui.form;
+        files = [];
+        flag = 0
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+
+
+            if (Object.keys(files).length > 0) {
+                $('#testAction').trigger('click');
+            } else {
+                layer.msg("上传文件不能为空", {icon: 5, time: 900})
+            }
+
+            return false;
+        });
+        //多文件列表
+        var demoListView = $('#demoList')
+            , uploadListIns = upload.render({
+            elem: '#testList'
+            , url: '/testExp1'
+            , accept: 'file'
+            , exts: 'py|xlsx|xls|csv'
+            , multiple: true
+            , auto: false
+            , size: 51200
+            , bindAction: '#testAction'
+            , before: function () {
+                this.data = {
+                    expname: $('#expname').val(), //实验名称
+                    exptarget: $('#exptarget').val(), //实验目的
+                    expwork: $('#expwork').val(), //实验任务
+                    upid: $('input[name="upid"]').val(), //上传者id
+                    flag: Object.keys(files).length  // 文件个数
+                }
+            }
+            , choose: function (obj) {
+                k = 0  // 判断有几个 py 文件
+                files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                j = 0  // 定义第一个文件只能为py
+                $.each(files, function (i, item) {
+
+                    if ((j === 0 && getSuffix(item.name) === "py") || j > 0) {
+
+                        j = 1
+                        if (getSuffix(item.name) === "py") {
+                            k += 1
+                        }
+                        if (k > 1) {
+                            layer.msg("py类型文件只能有一个", {icon: 7, time: 1000})
+                            // console.log(files)
+                            delete files[i]
+                            // console.log(files)
+                            return false;
+                        }
+                    } else {
+                        layer.msg("首个文件类型只能为py", {icon: 7, time: 1000})
+                        // console.log(files)
+                        delete files[i]
+                        // console.log(files)
+                        return false;
+
+                    }
+
+                })
+                if (Object.keys(files).length > 0) {
+                    $("#fileTable").css('display', 'block')
+                    $("#testList").html("<i\n" +
+                        "                            class=\"layui-icon\"></i>继续上传")
+                }
+
+                //读取本地文件
+                if (k === 1) {
+
+
+                    obj.preview(function (index, file) {
+                        // console.log('choose' + index)
+                        var tr = $(['<tr id="upload-' + index + '">'
+                            , '<td>' + file.name + '</td>'
+                            , '<td>' + (file.size / 1014).toFixed(1) + 'kb</td>'
+                            , '<td>等待上传</td>'
+                            , '<td>'
+                            , '<button class="layui-btn layui-btn-mini demo-reload layui-hide">重传</button>'
+                            , '<button class="layui-btn layui-btn-mini layui-btn-danger demo-delete">删除</button>'
+                            , '</td>'
+                            , '</tr>'].join(''));
+
+                        //单个重传
+                        tr.find('.demo-reload').on('click', function () {
+                            obj.upload(index, file);
+                        });
+
+                        //删除
+                        tr.find('.demo-delete').on('click', function () {
+                            delete files[index]; //删除对应的文件
+                            tr.remove();
+                            uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                            if (Object.keys(files).length ===0){
+                                $("#fileTable").css('display', 'none')
+                                $("#testList").html("<i\n" +
+                                    "                            class=\"layui-icon\"></i>点击上传")
+                            }
+
+                        });
+                        demoListView.append(tr);
+                    });
+                }
+            }
+            , done: function (res, index, upload) {
+                // debugger
+                // console.log('done' + index)
+                if (res.code == 200) { //上传成功
+                    // console.log(res)
+                    var tr = demoListView.find('tr#upload-' + index)
+                        , tds = tr.children();
+                    tds.eq(2).html('<span style="color:green;">上传成功</span>');
+                    tds.eq(3).html(''); //清空操作
+                    return delete this.files[index]; //删除文件队列已经上传成功的文件
+                }
+                this.error(index, upload);
+            }
+            , allDone: function (obj) {
+                resetForm(files);
+                layer.msg("创建成功", {icon: 6, time: 800})
+            }
+            , error: function (index) {
+                var tr = demoListView.find('tr#upload-' + index)
+                    , tds = tr.children();
+                tds.eq(2).html('<span style="color:red;">上传失败</span>');
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+            }
+        });
+
+
+    });
+</script>
+
+
+</body>
+
+</html>

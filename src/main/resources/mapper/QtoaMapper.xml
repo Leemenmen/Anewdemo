@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.newdmsp.demo.dao.QtoaMapper">
+
+
+    <insert id="addQtoa" parameterType="com.newdmsp.demo.entity.Qtoa" keyProperty="id" useGeneratedKeys="true">
+
+        insert into qtoa (sid, question, queTime)
+        values (#{sid}, #{question}, #{queTime})
+
+    </insert>
+    <update id="updateQtoa" parameterType="com.newdmsp.demo.entity.Qtoa">
+        update qtoa
+        set answer = #{answer},
+            ansTime = #{ansTime}
+        where id = #{id}
+
+    </update>
+    <select id="getQtoaTeach" resultType="com.newdmsp.demo.entity.Qtoa"
+            parameterType="com.newdmsp.demo.entity.Qtoa">
+        select q.*, u.gradeid, u.username, u.realname
+        from qtoa q,
+             user u
+        where u.id = q.sid
+          and u.gradeid = #{gradeid}
+        order by q.answer
+    </select>
+</mapper>

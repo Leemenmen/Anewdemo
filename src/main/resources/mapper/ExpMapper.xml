@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.newdmsp.demo.dao.ExpMapper">
+    <insert id="addExp" keyProperty="id" useGeneratedKeys="true" parameterType="com.newdmsp.demo.entity.Exp">
+        insert into exp(expname, exptarget, expwork, expcodeurl, upid, createTime, flag) value (#{expname}, #{exptarget}, #{expwork}, #{expcodeurl}, #{upid}, #{createTime}, #{flag})
+    </insert>
+    <insert id="addHistory" parameterType="com.newdmsp.demo.entity.History">
+        insert into historycode(sid, sname, expId, codeurl, resulturl, createtime, figCount, csvCount) value (#{sid}, #{sname}, #{expId}, #{codeurl}, #{resulturl}, #{createtime}, #{figCount}, #{csvCount})
+    </insert>
+    <insert id="addExpStep" keyProperty="id" useGeneratedKeys="true" parameterType="com.newdmsp.demo.entity.Exp">
+        insert into exp(expname, exptarget, expwork, expcodeurl, upid, createTime, flag, expVideoPath, exampleDoc) value (#{expname}, #{exptarget}, #{expwork}, #{expcodeurl}, #{upid}, #{createTime}, #{flag}, #{expVideoPath}, #{exampleDoc})
+
+    </insert>
+
+    <select id="getExpsByExpId" resultType="com.newdmsp.demo.entity.Exp" parameterType="integer">
+        SELECT *
+        from exp
+        where id = #{expId}
+    </select>
+    <select id="getExps" resultType="com.newdmsp.demo.entity.Exp">
+        select * from exp
+        <where>
+            <if test="expname.length()>0 and expname != 'null'">and expname like concat(concat('%',#{expname}),'%')
+            </if>
+        </where>
+
+    </select>
+    <select id="getGtoe" resultType="com.newdmsp.demo.entity.Exp">
+        SELECT ge.gid gradeid, exp.expname, exp.id
+        FROM gtoe ge
+                 LEFT JOIN exp
+                           on ge.expid = exp.id
+        ORDER BY ge.gid
+    </select>
+    <select id="getExpsByGradeId" resultType="com.newdmsp.demo.entity.Exp">
+        select e.id,e.expname
+        from exp e, gtoe ge
+        where ge.gid = #{gradeid}
+        and ge.expid = e.id
+    </select>
+    <select id="getTeachGradeExp" resultType="com.newdmsp.demo.entity.Exp">
+        SELECT tg.*, gte.id, gte.expname
+        FROM
+                ( SELECT g.id gradeid, g.gname FROM grade g WHERE tid = #{id} ) AS tg
+                    LEFT JOIN (
+                SELECT
+                    ge.gid gradeid,
+                    exp.expname,
+                    exp.id
+                FROM
+                    gtoe ge
+                        LEFT JOIN exp ON ge.expid = exp.id
+                ORDER BY
+                    ge.gid
+            ) AS gte ON gte.gradeid = tg.gradeid
+        ORDER BY
+            tg.gradeid ASC
+    </select>
+    <select id="getExpDataSets" resultType="com.newdmsp.demo.entity.Exp">
+        select * from exp
+        where exp.id = #{expId}
+    </select>
+
+</mapper>

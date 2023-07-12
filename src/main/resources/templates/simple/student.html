@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <!--    <meta name="viewport"-->
+    <!--          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>-->
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body ">
+                    <!--                    <form class="layui-form layui-col-space5">-->
+                    <div class="layui-inline layui-show-xs-block">
+                        <input type="text" name="expname" placeholder="请输入学号或姓名" autocomplete="off"
+                               class="layui-input"></div>
+                    <div class="layui-inline layui-show-xs-block">
+                        <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="getStu()">
+                            <i class="layui-icon">&#xe615;</i></button>
+                    </div>
+                    <div class="layui-inline layui-show-xs-block" id="addStu">
+
+                    </div>
+                    <div class="layui-inline layui-show-xs-block layui-text"
+                         style="float:right;font-size:16px;margin-right:20px">
+                        <span>学生数：</span> <span id="num"></span>
+                    </div>
+                    <!--                    </form>-->
+                </div>
+                <div class="layui-card-body ">
+                    <table class="layui-table">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>学号</th>
+                            <th>姓名</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="students" style="white-space: pre-line">
+                        </tbody>
+                    </table>
+                    <div id="pager" style="text-align: center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script th:inline="javascript">
+
+    let mPageSize;
+    mPageSize = 10
+    getStu();
+
+    function getStu(pageNo) {
+        pageNo = pageNo || 1;
+        let html;
+        html = '';
+        var user = {
+            "username": $('input[name="expname"]').val(),
+            "gradeid": getQueryString("gradeid"),
+        }
+        // $.get("/shares?flag="+flag, function (res) {
+        $.get("/users/" + pageNo + "/" + mPageSize, user, function (res) {
+            // console.log(res);
+            if (res.code == 200) {
+                // console.log(res.datas);
+                let buttonHtml;
+                $.each(res.datas, function (i, item) {
+
+                    if (item != null) {
+                        // 0 不可用 1 可用
+                        switch (item.enable) {
+                            case 0 : buttonHtml = '<button class="layui-btn" style="margin-left: 30px;display: none" id="pwd' + item.id + '"' +
+                                '       onclick="resetPassword(' + item.id + ')">重置密码' +
+                                '  </button>' +
+                                '<button class="layui-btn layui-bg-orange" style="margin-left: 30px; display: none" id="ban' + item.id + '"' +
+                                '       onclick="banStu(' + item.id + ')">禁用' +
+                                '  </button>' +
+                                '<button class="layui-btn layui-bg-blue" style="margin-left: 30px; " id="unban' + item.id + '"' +
+                                '       onclick="unBanStu(' + item.id + ')">启用' +
+                                '  </button>';
+                                break;
+                            case 1 : buttonHtml = '<button class="layui-btn layui-bg" style="margin-left: 30px;" id="pwd' + item.id + '"' +
+                                '       onclick="resetPassword(' + item.id + ')">重置密码' +
+                                '  </button>' +
+                                '<button class="layui-btn layui-bg-orange" style="margin-left: 30px; " id="ban' + item.id + '"' +
+                                '       onclick="banStu(' + item.id + ')">禁用' +
+                                '  </button>' +
+                                '<button class="layui-btn layui-bg-blue" style="margin-left: 30px; display: none " id="unban' + item.id + '"' +
+                                '       onclick="unBanStu(' + item.id + ')">启用' +
+                                '  </button>'; break;
+                        }
+
+                        html +=
+                            '<tr>' +
+                            '<td>' + (i + 1) + '</td>' +
+                            '<td>' + item.username + '</td>' +
+                            '<td>' + item.realname + '</td>' +
+                            '<td>' + buttonHtml +
+                            // '<button class="layui-btn" style="margin-left: 30px;" id="pwd'+item.id+'"'+
+                            // '       onclick="resetPassword('+item.id+')">重置密码'+
+                            // '  </button>' +
+                            // '<button class="layui-btn" style="margin-left: 30px; " id="ban'+item.id+'"'+
+                            // '       onclick="banStu('+item.id+')">禁用'+
+                            // '  </button>' +
+                            // '<button class="layui-btn" style="margin-left: 30px; " id="unban'+item.id+'"'+
+                            // '       onclick="unBanStu('+item.id+')">启用'+
+                            // '  </button>' +
+                            '</td>' +
+                            '</tr>';
+                    }
+                });
+                $("#students").html(html);
+                $("#num").html(res.total);
+                layui.use('laypage', function () {
+                    var laypage = layui.laypage;
+
+                    //执行一个laypage实例
+                    laypage.render({
+                        elem: 'pager', //注意，这里的 test1 是 ID，不用加 # 号
+                        count: res.total, //数据总数，从服务端得到
+                        limit: mPageSize,
+                        curr: pageNo,
+                        prev: "<",
+                        next: ">",
+                        groups: 2,
+                        limits: [mPageSize, 20, 30, 50, 100],
+                        layout: ['prev', 'page', 'next', 'limit', 'refresh', 'skip'],
+                        skip: true, //是否开启跳页
+                        jump: function (obj, isfirst) {
+                            if (!isfirst) {
+                                mPageSize = obj.limit;
+                                getStu(obj.curr, obj.limit)
+                            }
+                        }
+                    });
+                });
+            }
+        }, "json");
+    }
+
+    let html1;
+    html1 = ' <button class="layui-btn" onclick="xadmin.open(\'新增账号\',\'/pages/add_student?gradeid=' + getQueryString("gradeid") + '\',500,300)">\n' +
+        '                            <i class="layui-icon"></i>新增账号\n' +
+        '                        </button>'
+    $("#addStu").html(html1)
+
+    function resetPassword(id) {
+
+        layer.confirm('是否重置？', {title: false, closeBtn: false, skin: 'layui-layer-molv'}, function (index) {
+            $.post('/reset?id=' + id, function (res) {
+                if (res.code == 200) {
+                    layer.msg('重置成功, 密码为123', {icon: 6, time: 500});
+                } else {
+                    layer.msg('重置失败，请稍后重试', {icon: 5, time: 800});
+                }
+            })
+        })
+    }
+
+    function banStu(id) {
+
+        layer.confirm('确认禁用？', {title: false, closeBtn: false, skin: 'layui-layer-molv'}, function (index) {
+            $.post('/banStu?id=' + id, function (res) {
+                if (res.code == 200) {
+                    $("#pwd" + id).css('display', 'none')
+                    $("#ban"+ id).css('display','none')
+                    $("#unban" + id).css('display', 'inline')
+                    layer.close(index)
+                } else {
+                    layer.msg('禁用成功，请稍后重试', {icon: 5, time: 800});
+                }
+            })
+        })
+    }
+
+    function unBanStu(id){
+        layer.confirm('确认启用？', {title: false, closeBtn: false, skin: 'layui-layer-molv'}, function (index) {
+            $.post('/unBan?id=' + id, function (res) {
+                if (res.code == 200) {
+                    $("#pwd" + id).css('display', 'inline')
+                    $("#ban"+ id).css('display','inline')
+                    $("#unban" + id).css('display', 'none')
+                    layer.msg('成功,初始密码为123', {icon: 6, time: 1000});
+                } else {
+                    layer.msg('失败，请稍后重试', {icon: 5, time: 800});
+                }
+            })
+        })
+    }
+
+</script>
+
+</html>

@@ -1,0 +1,276 @@
+<!doctype html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>数据挖掘虚拟仿真实验平台</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script>
+        // 是否开启刷新记忆tab功能
+        // var is_remember = false;
+    </script>
+</head>
+<body class="index">
+<!-- 顶部开始 -->
+<div class="container">
+    <div class="logo">
+        <a href="/index" th:text="数据挖掘虚拟仿真实验平台" style="font-size: 16px;">X-admin v2.2</a></div>
+    <div class="left_open">
+        <a><i title="展开左侧栏" class="iconfont">&#xe699;</i></a>
+    </div>
+    <ul class="layui-nav right" lay-filter="">
+        <li class="layui-nav-item">
+            <a href="javascript:;" th:text="${session.loginUser.getRealname()}">admin</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a onclick="xadmin.open('个人信息','/pages/simple_self',500,400)">个人信息</a></dd>
+                <dd>
+                    <a href="javascript:;" class="close-all" data-type="closeall">退出</a></dd>
+            </dl>
+        </li>
+
+    </ul>
+</div>
+<!-- 顶部结束 -->
+<!-- 中部开始 -->
+<!-- 左侧菜单开始 -->
+<div class="left-nav" style="width: 220px">
+    <div id="side-nav">
+        <ul id="nav">
+
+
+
+
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="实验模块">&#xe6b3;</i>
+                    <cite>实验模块</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu">
+                    <!--                    <li>-->
+                    <!--                        <a onclick="xadmin.add_tab('新实验创建','/pages/add_testExp')">-->
+                    <!--                            <i class="iconfont">&#xe6a7;</i>-->
+                    <!--                            <cite>新实验创建</cite></a>-->
+                    <!--                    </li>-->
+                    <li>
+                        <a onclick="xadmin.add_tab('实验指定','/pages/exp_expallocate')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>实验指定</cite></a>
+                    </li>
+                    <!--                    <li>-->
+                    <!--                        <a onclick="xadmin.add_tab('实验创建','/pages/add_exp')">-->
+                    <!--                            <i class="iconfont">&#xe6a7;</i>-->
+                    <!--                            <cite>实验创建</cite></a>-->
+                    <!--                    </li>-->
+<!--                    <li>-->
+<!--                        <a onclick="xadmin.add_tab('新实验创建','/pages/add_expAndData')">-->
+<!--                            <i class="iconfont">&#xe6a7;</i>-->
+<!--                            <cite>实验创建</cite></a>-->
+<!--                    </li>-->
+                    <li>
+                        <a onclick="xadmin.add_tab('创建实验','/pages/step_teachCreateExpAndData')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>创建实验</cite></a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="上传监控">&#xe71d;</i>
+                    <cite>上传监控</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu">
+                    <li>
+                        <a onclick="xadmin.add_tab('代码监控','/pages/simple_testshare?flag=0')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>代码监控</cite></a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('数据监控','/pages/simple_testshare?flag=1')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>数据监控</cite></a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="实验答疑">&#xe6b2;</i>
+                    <cite>实验答疑</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu" id="gradelist">
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="作业评阅">&#xe74c;</i>
+                    <cite>作业评阅</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu" id="gradechecklist">
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="学生管理">&#xe6ae;</i>
+                    <cite>学生管理</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu" id="student">
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- <div class="x-slide_left"></div> -->
+<!-- 左侧菜单结束 -->
+<!-- 右侧主体开始 -->
+<div class="page-content">
+    <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+        <ul class="layui-tab-title">
+            <li class="home">
+                <i class="layui-icon">&#xe68e;</i>我的桌面
+            </li>
+        </ul>
+        <div class="layui-unselect layui-form-select layui-form-selected" id="tab_right">
+            <dl>
+                <dd data-type="this">关闭当前</dd>
+                <dd data-type="other">关闭其它</dd>
+                <dd data-type="all">关闭全部</dd>
+            </dl>
+        </div>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <iframe src='/pages/welcome1' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+            </div>
+        </div>
+        <div id="tab_show"></div>
+    </div>
+</div>
+<div class="page-content-bg"></div>
+<style id="theme_style"></style>
+<!-- 右侧主体结束 -->
+<!-- 中部结束 -->
+
+</body>
+<script th:inline="javascript">
+
+    html1 = '';
+    html2 = '';
+    html3 = '';
+    html4 = '';
+    let gtoe = [];
+    //js代码
+    layui.use('element', function () {
+        $.get("/gToe", function (res) {
+            if (res.code == 200) {
+                // console.log(res.datas)
+                gtoe = res.datas;
+                $.get("/getGrades", function (res) {
+                    // console.log(res)
+                    if (res.code == 200) {
+                        // console.log(res.datas)
+                        $.each(res.datas, function (i, item) {
+                            if (item != null) {
+                                html1 +=
+                                    '<li>' +
+                                    '      <a onclick="xadmin.add_tab(\'' + item.gname + '\',\'/pages/simple_teachqtoa?gradeid=' + item.gradeid + '\')">' +
+                                    '               <i class="iconfont">&#xe6a7;</i>' +
+                                    '               <cite>' + item.gname + '</cite></a>' +
+                                    '</li>'
+                                html3 +=
+                                    '<li>' +
+                                    '      <a onclick="xadmin.add_tab(\'' + item.gname + '\',\'/pages/simple_student?gradeid=' + item.gradeid + '\')">' +
+                                    '               <i class="iconfont">&#xe6a7;</i>' +
+                                    '               <cite>' + item.gname + '</cite></a>' +
+                                    '</li>'
+                                html4 +=
+                                    '<li>' +
+                                    '   <a href="javascript:;">' +
+                                    '       <i class="iconfont">&#xe70b;</i>' +
+                                    '           <cite>' + item.gname + '</cite>' +
+                                    '       <i class="iconfont nav_right">&#xe697;</i></a>' +
+                                    '   <ul class="sub-menu">'
+                                // '</ul>'+
+                                // '</li>'
+                                // console.log(gtoe.length)
+                                var k = 0; //用于判定三级菜单是否有值
+                                $.each(gtoe, function (i, g) {
+                                    // console.log("=i=g=k=l=="+i+'='+item.gradeid+"=="+k+'='+gtoe.length);
+                                    if (g.gradeid == item.gradeid) {
+                                        html4 +=
+                                            '<li>' +
+                                            '      <a onclick="xadmin.add_tab(\'' + item.gname + '/' + g.expname + '\',\'/pages/simple_check?gradeid=' + item.gradeid + '&expid=' + g.id + '&gname=' + item.gname + '&expname=' + g.expname + '\')">' +
+                                            '           <i class="iconfont">&#xe6a7;</i>' +
+                                            '                    <cite>' + g.expname + '</cite></a>' +
+                                            '</li>'
+                                        if ((i + 1) == gtoe.length) {
+                                            html4 += '</ul></li>'
+                                            return false;
+                                        }
+                                        k++
+                                    } else {
+                                        if (k > 0) {
+                                            html4 += '</ul></li>'
+                                            return false;
+                                        }
+                                    }
+                                })
+                            }
+                        });
+                        html3 +=
+                            '<li>' +
+                            '      <a onclick="xadmin.add_tab(\'新增班级\',\'/pages/add_grade\')">' +
+                            '               <i class="iconfont">&#xe6a7;</i>' +
+                            '               <cite>新增班级</cite></a>' +
+                            '</li>'
+                        $("#gradelist").html(html1);
+                        $("#gradechecklist").html(html4);
+                        $("#student").html(html3);
+                    } else {
+                        layer.msg("失败");
+                    }
+                })
+
+            }
+        })
+
+
+        var element = layui.element;//Tab的切换功能，切换事件监听等，需要依赖element模块
+        var layer = layui.layer;
+        var active = {
+            //在这里给active绑定事件，后面可通过active调用这些事件
+            tabDeleteAll: function (ids) {//删除所有
+                $.each(ids, function (i, item) {
+                    element.tabDelete("xbs_tab", item);//ids是一个数组，里面存放了多个id，调用tabDelete方法分别删除
+                })
+            }
+        };
+
+        $(".close-all").click(function () {
+            if ($(this).attr("data-type") == "closeall") {
+                var tabtitle = $(".layui-tab-title li");
+                var ids = new Array();
+                $.each(tabtitle, function (i) {
+                    ids[i] = $(this).attr("lay-id");
+                });
+                active.tabDeleteAll(ids);
+            }
+            sessionStorage.clear();
+            window.location.replace("/");
+        })
+    });
+
+</script>
+</html>

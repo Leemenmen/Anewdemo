@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.newdmsp.demo.dao.ShareMapper">
+    <insert id="addShare" parameterType="com.newdmsp.demo.entity.Share" keyProperty="id" useGeneratedKeys="true">
+
+        insert into share (user_id, upload_des, storage_path, flag, createTime, tid)
+        values (#{userId}, #{uploadDes}, #{storagePath}, #{flag}, #{createTime}, 3)
+
+    </insert>
+
+    <update id="updateShare" parameterType="java.lang.Integer">
+        update share
+        set download_count = #{count}
+        where id = #{id}
+    </update>
+    <update id="upCheckShare" parameterType="com.newdmsp.demo.entity.Share">
+        update share
+        set tid = #{tid}
+            ,teach_score = #{teachScore}
+            ,flagDes = #{flagDes}
+        where id = #{id}
+    </update>
+
+    <select id="getShareInfo" resultType="com.newdmsp.demo.entity.Share">
+        select share.*,user.username FROM share LEFT JOIN user on share.user_id = user.id
+        <where>
+            tid=1
+            <if test="flag!=null">and flag = #{flag}</if>
+            <if test="uploadDes.length()>0 and uploadDes!= 'null'">and upload_des like concat(concat('%',#{uploadDes}),'%')</if>
+        </where>
+    </select>
+
+    <select id="getTestShares" resultType="com.newdmsp.demo.entity.Share">
+        select sh.id,
+               sh.upload_des,
+               sh.storage_path,
+               sh.user_id,
+               su.gradeid,
+               su.gname,
+               su.username,
+               su.realname,
+               sh.tid,
+               sh.teach_score
+        from (SELECT *
+              FROM `share` s
+              where s.flag = #{flag}) sh
+
+                 LEFT JOIN
+
+             (select u.id, u.gradeid, g.gname, u.username, u.realname, g.tid
+              from user u,
+                   grade g
+              where u.gradeid = g.id
+                and g.tid = #{id}
+             ) su
+             on sh.user_id = su.id
+
+        where su.id is not null
+        order by sh.tid
+    </select>
+    <select id="getShareByFlagPage" resultType="com.newdmsp.demo.entity.Share">
+        select share.*,user.username FROM share LEFT JOIN user on share.user_id = user.id
+        <where>
+            tid=1
+            <if test="data.flag!=null">and flag = #{data.flag}</if>
+            <if test="data.uploadDes.length()>0 and data.uploadDes!= 'null'">and upload_des like concat(concat('%',#{data.uploadDes}),'%')</if>
+        </where>
+        limit #{beginIndex}, #{pageSize};
+    </select>
+    <select id="getShareByFlagPageTotals" resultType="java.lang.Integer">
+        select count(*) FROM share LEFT JOIN user on share.user_id = user.id
+        <where>
+            tid=1
+            <if test="data.flag!=null">and flag = #{data.flag}</if>
+            <if test="data.uploadDes.length()>0 and data.uploadDes!= 'null'">and upload_des like concat(concat('%',#{data.uploadDes}),'%')</if>
+        </where>
+    </select>
+    <select id="getTestShareByFlagPage" resultType="com.newdmsp.demo.entity.Share">
+        select sh.id,
+               sh.upload_des,
+               sh.storage_path,
+               sh.user_id,
+               su.gradeid,
+               su.gname,
+               su.username,
+               su.realname,
+               sh.tid,
+               sh.flagDes,
+               sh.teach_score
+        from (SELECT *
+              FROM `share` s
+              where s.flag = #{data.flag}) sh
+
+                 LEFT JOIN
+
+             (select u.id, u.gradeid, g.gname, u.username, u.realname, g.tid
+              from user u,
+                   grade g
+              where u.gradeid = g.id
+                and g.tid = #{data.tid}
+             ) su
+             on sh.user_id = su.id
+
+        where su.id is not null
+        order by sh.tid desc
+        limit #{beginIndex}, #{pageSize};
+    </select>
+    <select id="getTestShareByFlagPageTotal" resultType="java.lang.Integer">
+        select count(*)
+        from (SELECT *
+              FROM `share` s
+              where s.flag = #{data.flag}) sh
+
+                 LEFT JOIN
+
+             (select u.id, u.gradeid, g.gname, u.username, u.realname, g.tid
+              from user u,
+                   grade g
+              where u.gradeid = g.id
+                and g.tid = #{data.tid}
+             ) su
+             on sh.user_id = su.id
+
+        where su.id is not null
+        order by sh.tid
+    </select>
+</mapper>

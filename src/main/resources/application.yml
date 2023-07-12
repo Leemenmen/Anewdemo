@@ -1,0 +1,47 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  # 指定配置文件生效
+  profiles:
+    active: pro
+  jpa:
+    database: mysql
+  jmx:
+    enabled: false
+  thymeleaf:
+    cache: false
+    mode: HTML
+    servlet:
+      content-type: text/html
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.newdmsp.entity
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        web: info
+    com.example.dmsp.dao: debug
+  file:
+    name: ./dmsp_log/dmsp.log
+server:
+  max-http-header-size: 102400
+  tomcat:
+    # 最大线程数,应用服务同时可以处理多少个HTTP请求，tomcat默认为200
+    threads:
+      max: 1000
+    # 最大等待数,HTTP请求数达到tomcat的最大线程数时,还有新的HTTP请求到来，这时tomcat会将该请求放在等待队列中，这个acceptCount就是指能够接受的最大等待数，默认100
+    accept-count: 800
+    #最大连接数,同一时间，tomcat能够接受的最大连接数。一般这个值要大于maxThreads+acceptCount
+    max-connections: 2000
+

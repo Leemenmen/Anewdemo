@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/ace-builds-master/src-noconflict/ace.js"></script>
+
+    <style>
+        #editor {
+            margin: 20px;
+            width: 90%;
+            height: 600px;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-side" style="width:85%;margin-left:2%;margin-top: 1%;">
+        <div class="layui-collapse">
+
+            <div class="layui-colla-item">
+                <h4 class="layui-colla-title">实验任务</h4>
+                <div class="layui-colla-content" id="work" style="white-space: pre-line;">
+                </div>
+            </div>
+            <div class="layui-colla-item">
+                <h4 class="layui-colla-title">开始实验</h4>
+                <div class="layui-colla-content">
+                    <div id="buttons">
+                        <button class="layui-btn"
+                                onclick="saveCode(ace.edit('editor').getValue())"
+                                style="margin-left: 30px;">保存代码
+                        </button>
+                        <button class="layui-btn"
+                                onclick="xadmin.open('寻求帮助','simple_qtoa.html?qflag=0',500,220)"
+                                style="margin-left: 30px;">寻求帮助
+                        </button>
+                        <button class="layui-btn"
+                                style="margin-left: 30px;" onclick="runEditorTest(ace.edit('editor').getValue(), 1)"
+                                id="run">代码执行
+                        </button>
+
+                    </div>
+                    <div class="" id="editor">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script th:inline="javascript">
+
+    //获取当前页面的实验id
+    // var expId = getQueryString("expid");
+    // $("#work").html(getQueryString("expwork"));
+
+    var expId = '1';
+    $("#work").html("expword");
+
+    //学生id+实验id, 记录编辑器中的代码
+    name = [[${session.loginUser.getId()}]]+expId;
+
+    if (sessionStorage.getItem(name)) {
+        //给编辑器中填充保存的代码
+        codeEditor("editor", sessionStorage.getItem(name))
+    } else {
+        codeEditor("editor",'')
+    }
+
+
+</script>
+
+</html>

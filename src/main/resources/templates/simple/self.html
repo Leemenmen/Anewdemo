@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>个人信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script src="/js/jsencrypt.min.js" charset="utf-8"></script>
+
+</head>
+
+<body>
+
+<div class="layui-fluid">
+    <div id="original">
+        <table class="layui-table" style="margin-top: 10px;margin-bottom: 10px;">
+            <tr>
+                <th>用户名</th>
+                <th>姓名</th>
+                <th class="grade" style="display:none;">班级</th>
+                <th>密码</th>
+            </tr>
+            <tr>
+                <th th:text="${session.loginUser.getUsername()}"></th>
+                <th th:text="${session.loginUser.getRealname()}"></th>
+                <th class="grade" style="display:none;" th:text="${session.loginUser.getGname()}"></th>
+                <th>******</th>
+            </tr>
+
+        </table>
+        <div class="layui-inline layui-show-xs-block">
+            <button class="layui-btn" onclick="change()">
+                修改密码
+            </button>
+        </div>
+    </div>
+
+    <form class="layui-form" id="update" style="display: none" onsubmit="return false">
+
+        <div class="layui-form-item" style="margin-top: 20px">
+            <label for="opassword" class="layui-form-label">
+                原密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" id="opassword" name="opassword" required="" lay-verify="opassword"
+                       placeholder="请输入原密码" autocomplete="off" class="layui-input" style="width: 300px;">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 20px">
+            <label for="password" class="layui-form-label">
+                新密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" id="password" name="password" required="" lay-verify="password"
+                       placeholder="请输入新密码" autocomplete="off" class="layui-input" style="width: 300px;">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 40px;">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="update" id="add"
+                        style="width: 20%;margin-left: 5%;">立即提交
+                </button>
+                <button class="layui-btn" onclick="Rechange()">
+                    取消修改
+                </button>
+            </div>
+        </div>
+        <div class="layui-form-item layui-text" style="margin-left:10%">
+            <p style="font-size:16px;margin-bottom:10px"> 注意：</p>
+            <ul>
+                <li>新密码必须为8~20位</li>
+                <li>同时包含大写字母，小写字母，特殊字符，数字</li>
+            </ul>
+        </div>
+    </form>
+
+
+</div>
+</body>
+
+<script th:inline="javascript">
+
+    if ([[${session.loginUser.getRoleid()}]] == 1) {
+        $(".grade").css('display', 'block');
+    }
+
+    function change() {
+        $("#original").css('display', 'none');
+        $("#update").css('display', 'block');
+    }
+
+    function Rechange() {
+        $("#original").css('display', 'block');
+        $("#update").css('display', 'none');
+    }
+
+    layui.use(['form', 'layer', 'element'], function () {
+        $ = layui.jquery;
+        var form = layui.form,
+            layer = layui.layer,
+            element = layui.element;
+
+        form.verify({
+            opassword: function (value) {
+                // console.log(value)
+                if (value !== [[${session.loginUser.getPassword()}]]) {
+                    return '原密码不正确';
+                }
+            },
+            // 必须包含大小写字母，特殊字符，数字的正则8~20位
+            password: function (value) {
+                // console.log(value)
+                if (/^(?![A-z0-9]+$)(?=.[^%&',;=?$\x22])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,12}$/.test(value) === false) {
+                    // layer.msg('密码必须为8~20位，必须包含大小写字母，特殊字符，数字')
+                    return '新密码必须为8~20位，同时包含大小写字母，特殊字符，数字';
+                }
+            }
+
+        });
+
+        form.on('submit(update)', function (data) {
+            data.field.id = [[${session.loginUser.getId()}]]
+
+            console.log(data.field);
+            data.field.password = encrpty(data.field.password)
+            console.log(data.field);
+            layer.confirm("修改后密码为：" + $('#password').val(), {
+                title: false,
+                closeBtn: false,
+                skin: 'layui-layer-molv'
+            }, function (layno) {
+                layer.close(layno);
+                $.post('/updateStuPassword', data.field, function (res) {
+                    if (res.code === 200) {
+                        layer.confirm('密码修改成功，下次请用新密码登录',
+                            {
+                                btn: ['确定'],
+                                title: false,
+                                closeBtn: false,
+                                skin: 'layui-layer-molv'
+                            }, function (index, layno) {
+                                xadmin.close();
+                            }
+                        )
+                    } else {
+                        layer.msg("密码修改失败，请稍后重试！！！")
+                    }
+
+                })
+
+            })
+            return false;
+
+        })
+
+    })
+
+
+</script>
+
+</html>

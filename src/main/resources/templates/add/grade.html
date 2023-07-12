@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增班级</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <!--    <meta name="viewport"-->
+    <!--          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>-->
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script type="text/javascript" src="/js/xm-select.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form" method="POST" style="margin-top: 3%;" id="resetForm">
+
+            <div class="layui-form-item">
+                <label for="gradeName" class="layui-form-label">
+                    <span class="x-red">*</span>班级名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="gradeName" name="gradeName" required="" lay-verify="required"
+                           placeholder="请输入" autocomplete="off" class="layui-input" style="width: 300px;">
+                </div>
+                <!--                <div class="layui-form-mid layui-word-aux">-->
+                <!--                    <span class="x-red">*</span>将会成为您唯一的登入名-->
+                <!--                </div>-->
+            </div>
+            <div class="layui-form-item" style="margin-top: 20px">
+                <div class="layui-form-item" id="testitem">
+                    <label class="layui-form-label" style="font-weight: bold"> <span class="x-red">*</span>授权实验</label>
+                    <div class="layui-input-inline" id="demo" style="width: 502px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-top: 40px;">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="add" id="put"
+                            style="width: 20%;margin-right: 5%;">立即提交
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script th:inline="javascript">
+
+    var datas = [];
+    var exp = {
+        "expname": '',
+    }
+    layui.use(['form', 'layer'], function () {
+        $ = layui.jquery;
+        var form = layui.form
+            , layer = layui.layer;
+
+        $.post("/getExps", exp, function (res) {
+            if (res.code === 200) {
+                if (res.datas !== '') {
+                    $.each(res.datas, function (i, item) {
+                        datas[i] = {}
+                        datas[i]['name'] = item.expname;
+                        datas[i]['value'] = item.id;
+                    })
+                    // id = res.data.id
+                    xms('grantExp', 'demo', datas); //因变量
+                }
+            }else {
+                layer.msg("实验获取失败")
+            }
+        })
+
+        //监听提交
+        form.on('submit(add)', function (data) {
+
+            data.field.tid = [[${session.loginUser.getId()}]]
+            layer.confirm("确认添加？", {title: false, closeBtn: false, skin: 'layui-layer-molv'}, function (layno) {
+                layer.close(layno);
+                $.post("/addGrade", data.field, function (res) {
+                    if (res.code == 200) {
+                        layer.msg(res.msg, {time: 800, icon: 6})
+                        parent.location.reload();
+                    } else {
+                        layer.msg(res.msg, {time: 800, icon: 5})
+                    }
+                })
+            })
+            return false;
+        })
+
+    })
+</script>
+</body>
+</html>

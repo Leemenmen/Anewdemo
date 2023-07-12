@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>欢迎页面-X-admin2.2</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="/css/font.css">
+        <link rel="stylesheet" href="/css/xadmin.css">
+        <script type="text/javascript" src="/js/jquery.min.js"></script>
+        <script type="text/javascript" src="/js/index.js"></script>
+        <script type="text/javascript" src="/js/new.js"></script>
+        <script src="/lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="/js/xadmin.js"></script>
+        <style>
+            #editor {
+                margin: 20px;
+                width: 90%;
+                height: 600px;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+            }
+        </style>
+    </head>
+    
+    <body>
+
+        <div class="layui-fluid">
+            <div class="layui-side" style="width:85%;margin-left:2%;margin-top: 1%;">
+                <div class="layui-collapse">
+                    <div class="layui-colla-item">
+                        <h4 class="layui-colla-title">实验目的</h4>
+                        <div class="layui-colla-content" id="target" style="white-space: pre-line;">
+                        </div>
+                    </div>
+                    <div class="layui-colla-item">
+                        <h4 class="layui-colla-title">实验任务</h4>
+                        <div class="layui-colla-content" id="work" style="white-space: pre-line;">
+                        </div>
+                    </div>
+                    <div class="layui-colla-item">
+                        <h4 class="layui-colla-title">示例代码</h4>
+                        <div class="layui-colla-content">
+                            <div>
+                                <button class="layui-btn"
+                                        onclick="xadmin.open('寻求帮助','simple_qtoa.html?qflag=0',500,220)" style="margin-left: 30px;">我要提问
+                                </button>
+                                <button class="layui-btn"
+                                        style="margin-left: 30px; "
+                                        onclick="Download(html2)">代码下载
+                                </button>
+                                <button class="layui-btn"
+                                        style="margin-left: 30px; "
+                                        onclick="StartExp(expId, html1)">开始实验
+                                </button>
+                            </div>
+                            <div class="" id="editor">
+                                代码加载失败！
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script th:inline="javascript">
+
+        //获取当前页面的实验id
+        var expId = getQueryString("expid");
+        // var gradeId = [[${session.loginUser.getGradeid()}]]
+
+        // var messages = [[${session.loginUser.getExps()}]]; //包含实验的所有信息
+        // html='';//实验目标
+        html1='';//实验任务
+        html2='';//实验示例代码路径
+
+        $.post("/getExpsByExpId/"+expId,function (res){
+            if (res.code===200){
+                // $.each(res.data, function (i, item) {
+                    // if (expId===item.id) {
+                        // console.log("实验id:"+item.id)
+                        // html+=res.data.exptarget;
+                        html1+=res.data.expwork;
+                        html2+=res.data.expcodeurl;
+                    // }
+                // });
+
+                $("#target").append(res.data.exptarget);
+                $("#work").append(res.data.expwork);
+                // console.log(res.data)
+                initEditor("editor","dmspCode/" + res.data.expcodeurl);
+            }else {
+                layer.msg("实验加载失败，请稍后重试！")
+            }
+            return false;
+        })
+        // console.log("目标id是"+paValue[0]);
+
+
+
+    </script>
+
+
+
+
+</html>

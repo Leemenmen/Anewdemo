@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <link rel="stylesheet" href="/lib/layui/css/layui.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+</head>
+
+<body>
+
+<div class="layui-container">
+    <div class="layui-carousel" id="test1" lay-filter="test1">
+<!--        <div id="number" style="float: right" class="layui-text">-->
+<!--            <span id="now">1</span>/<span id="total"></span>-->
+<!--        </div>-->
+        <div carousel-item id="imgs">
+            <!--            <div><img src="F:\project\Anewdemo\test.png" /></div>-->
+            <!--            <div><img src="F:\project\Anewdemo\stuCode\stu1\2022_06_30_210329_fig_0.png" /></div>-->
+            <!--            <div><img src="F:\project\Anewdemo\stuCode\stu1\2022_06_30_210329_fig_0.png" /></div>-->
+        </div>
+
+    </div>
+</div>
+</body>
+
+<script th:inline="javascript">
+    // figCount = getQueryString("figCount")
+    // figName = getQueryString("figName")
+    figCount = 20
+    figName = "2022_07_04_110802_fig"
+    console.log(figCount)
+    console.log(figName)
+    $("#total").html(figCount)
+    html = '';
+    name = 'stu1/' + figName;
+    for (i = 0; i < figCount; i++) {
+        // html += "<div><img src=\"/pictures/" + name + '_' + i + '.png' + "\" /></div>"
+        html += "<div style='text-align: center'><img src=\"/pictures/" + name + '_' + i + '.png' + "\" /><br>" +
+            "<p class='layui-text' style='float: right; font-size: 16px;margin-right:4%;margin-top:1%'>" + (i + 1) + '&nbsp;/&nbsp;'+ figCount+ "</p>" +
+            "</div>"
+
+    }
+    $("#imgs").html(html)
+
+    layui.use('carousel', function () {
+        var carousel = layui.carousel;
+        //建造实例
+        carousel.render({
+            elem: '#test1'
+            , width: '800px' //设置容器宽度
+            , height: '600px' //设置容器高度
+            , autoplay: false // 是否自动轮播
+            // , full:'true' //是否全屏轮播,默认false
+            // , arrow: 'always' //始终显示箭头和点击按钮
+            // ,anim: 'updown' //切换动画方式，可从各个方向滚动
+        });
+
+        //触发轮播切换事件
+        carousel.on('change(test1)', function (obj) { //test1来源于对应HTML容器的 lay-filter="test1" 属性值
+            console.log(obj.index + 1); //当前条目的索引
+            $("#now").html(obj.index + 1)
+            // console.log(obj.prevIndex); //上一个条目的索引
+            // console.log(obj.item); //当前条目的元素对象
+        });
+        // var ins = carousel.render(options);
+        //
+        // //重置轮播
+        // ins.reload(options);
+    });
+
+</script>
+
+
+</html>

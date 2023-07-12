@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/xm-select.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/ace-builds-master/src-noconflict/ace.js"></script>
+
+    <style>
+        #editor {
+            margin: 20px;
+            width: 90%;
+            height: 600px;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layui-container" style="width:85%;margin-left:2%;margin-top: 1%;">
+
+    <div class="layui-form layui-form-item">
+        <label class="layui-form-label" style="width: 100px;font-size: 14px">使用数据集：</label>
+        <div class="layui-input-inline" style="width: 660px">
+            <input type="radio" name="level" lay-filter="levelM" value="0" title="是" >
+            <input type="radio" name="level" lay-filter="levelM" value="1" title="否" checked>
+        </div>
+    </div>
+
+
+    <div id="dataSets" style="margin: 2% ;display: none">
+        <div style="margin-top: 1%;">
+            <label class="layui-form-label" style="font-size: 16px;">可用数据集</label>
+            <div id="demo" class="xm-select-demo layui-inline" style="width: 250px"></div>
+
+            <!--            <div class="layui-form layui-inline" lay-filter="myDiv" style="width: 25%;">-->
+<!--                <select id="dataNow" lay-filter="mySelect" lay-search>-->
+<!--                </select>-->
+<!--            </div>-->
+
+
+            <div class="layui-form layui-inline" id="upload" style="margin-left: 20px">
+                <label class="layui-form-label" style="font-size: 16px;">上传数据集</label>
+                <button type="button" id="test10" style="margin-top: 2px" class="layui-btn"><i
+                        class="layui-icon"></i>点击上传
+                </button>
+                <p class="layui-text" id="fileName"></p>
+<!--                            <button class="layui-upload" id="test10"-->
+<!--                                    style="width: 65%;height: 100px;text-align: center">-->
+<!--                                <i class="layui-icon"></i>-->
+<!--                                                <p style="font-size: 16px">点击或拖拽到此处上传数据集</p>-->
+<!--                            </button>-->
+            </div>
+        </div>
+
+        <div class="layui-text">
+            <br>
+            <p>注意:&nbsp;&nbsp;可用数据集中<br>
+            系统数据集路径为：/opt/pubWebPro/dataSets/文件名<br>
+            上传数据集路径为：/opt/pubWebPro/selfDataset/<span th:text="${session.loginUser.getId()}"></span>/文件名<p>
+        </div>
+
+    </div>
+    <div id="buttons" style="margin-top: 3%">
+        <button class="layui-btn"
+                onclick="saveCode(ace.edit('editor').getValue())"
+                style="margin-left: 30px;">保存
+        </button>
+
+        <button class="layui-btn"
+                style="margin-left: 30px;"
+                onclick="runEditorTest(ace.edit('editor').getValue(), getQueryString('expid'))"
+                id="run">代码执行
+        </button>
+    </div>
+    <div class="" id="editor">
+    </div>
+
+
+</div>
+</body>
+
+<script th:inline="javascript">
+
+    // codeEditor('editor', '')
+    codeEditor("editor", '')
+
+    //获取当前页面的实验id
+    var expId = getQueryString("expid");
+
+
+    //学生id+实验id, 记录编辑器中的代码
+    name = [[${session.loginUser.getId()}]] + expId;
+
+    if (sessionStorage.getItem(name)) {
+        //给编辑器中填充保存的代码
+        codeEditor("editor", sessionStorage.getItem(name))
+    } else {
+        codeEditor("editor", '')
+    }
+    SysList = []
+    SelfList = []
+
+    var demo = xmSelect.render({
+        el: '#demo',
+        model: { label: { type: 'text' } },
+        clickClose: true,
+        filterable: true,
+        tree: {
+            show: true,
+            strict: false,
+            expandedKeys: [ -1 ],
+        },
+        on: function(data){
+            // console.log(data)
+            if(data.isAdd){
+                return data.change.slice(0, 1)
+            }
+        },
+        height: 'auto',
+    })
+
+    $.get("/dataSets/" + [[${session.loginUser.getId()}]], function (res) {
+        if (res.code === 200) {
+            // console.log(res)
+            $.each(res.datas, function (i, item) {
+                if (item.expId === 0){
+                   SelfList.push({name: item.dataPath, value: item.id})
+                }else{
+                    SysList.push({name: item.dataPath, value: item.id})
+                }
+                demo.update({
+                    data: [
+                        {name: '系统数据集', value: -1, children: SysList},
+                        {name: '已上传数据集', value: -2, children: SelfList},
+                    ]
+                })
+            })
+        }
+    })
+    layui.use(['form','upload'], function () {
+        var form = layui.form,
+            upload = layui.upload
+        form.render("select")
+        //此处即为 radio 的监听事件
+        form.on('radio(levelM)', function(data){
+
+            var level = data.value;//被点击的radio的value值
+            if (level === '0'){
+                $("#dataSets").css('display','block')
+            }else {
+                $("#dataSets").css('display','none')
+            }
+
+        });
+
+        upload.render({
+            elem:'#test10'
+            ,accept: 'file'
+            ,exts: 'xlsx|xls|csv'
+            ,type: 'post'
+            ,auto: false
+            ,url:'/selfDataset/'+[[${session.loginUser.getId()}]]+'/0'
+            ,choose: function (obj){
+                obj.preview(function(index, file, result){
+                    // console.log(file);            //file表示文件信息，result表示文件src地址
+                    // 空文件的size为6602
+                   if (file.size<=6602){
+
+                       // console.log("空白")
+                       layer.msg("文件不能为空白文件", {icon:2})
+                       return false
+                   }else {
+                       obj.upload(index,file)
+                   }
+
+                });
+            }
+            ,before: function (obj){
+                layer.load(2,{time:100})
+            }
+            ,done: function (res){
+                if (res.code === 200){
+                    // console.log(res)
+                    $("#fileName").html("数据集名为："+res.data)
+                    layer.msg("上传成功，可以使用该数据集",{icon:1})
+                }
+            }
+        })
+    })
+
+</script>
+</html>

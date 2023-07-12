@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>数据挖掘虚拟仿真实验平台</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+
+    <!--        <script language=”javascript” type=“text/javascript” src=“/js/index.js”></script>-->
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>-->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <style>
+        .comment {
+            width: 100%; /*自动适应父布局宽度*/
+            overflow: auto;
+            word-break: break-all;
+            /*在ie中解决断行问题(防止自动变为在一行显示，主要解决ie兼容问题，ie8中当设宽度为100%时，文本域类容超过一行时，
+            当我们双击文本内容就会自动变为一行显示，所以只能用ie的专有断行属性“word-break或word-wrap”控制其断行)*/
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+<input type="file" id="files" name="file"/>读取文件:
+<span class="readButton">
+  <button>显示</button>
+</span>
+
+
+</body>
+<script>
+    function readBlob() {
+
+        var files = document.getElementById('files').files;
+        if (!files.length) {
+            alert('Please select a file!');
+            return;
+        }
+
+        var file = files[0];
+        console.log(file)
+        console.log(file.size)
+        var start = 0;
+        var stop = file.size - 1;
+
+        var reader = new FileReader();
+
+
+        reader.onloadend = function (evt) {
+            if (evt.target.readyState === FileReader.DONE) { // DONE == 2
+                var content = evt.target.result;
+                alert(content);
+            }
+        };
+        var blob = file.slice(start, stop + 1);
+        reader.readAsText(blob, "utf-8");
+    }
+
+    document.querySelector('.readButton').addEventListener('click', function (evt) {
+        if (evt.target.tagName.toLowerCase() === 'button') {
+            readBlob();
+        }
+    }, false);
+</script>
+</html>

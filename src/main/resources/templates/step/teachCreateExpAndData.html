@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script type="text/javascript" src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--></head>
+
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form" method="POST" style="margin-top: 3%;" id="upForm">
+
+            <div>
+                <div class="layui-form-item">
+                    <label for="expname" class="layui-form-label">
+                        <span class="x-red">*</span>实验名称
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="expname" name="expname" required="" lay-verify="required"
+                               placeholder="请输入" autocomplete="off" class="layui-input" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top: 20px">
+                    <label for="exptarget" class="layui-form-label">
+                        <span class="x-red">*</span>实验目的
+                    </label>
+                    <div class="layui-input-inline">
+                    <textarea id="exptarget" name="exptarget" lay-verify="required" placeholder="请输入"
+                              class="layui-textarea" style="width: 700px;"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top: 20px">
+                    <label for="expwork" class="layui-form-label">
+                        <span class="x-red">*</span>实验任务
+                    </label>
+                    <div class="layui-input-inline">
+                    <textarea id="expwork" name="expwork" lay-verify="required" placeholder="请输入" class="layui-textarea"
+                              style="width: 700px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" style="margin-top: 20px">
+                    <label for="expwork" class="layui-form-label">
+                        <span class="x-red">*</span>示例代码
+                    </label>
+
+                    <div class="layui-input-inline">
+                        <button type="button"  name="code" data-type="py" data-id="test1" class="layui-btn uploadNeed" id="test1" style="margin-left: 20px">选择代码</button>
+                        <span>文件类型：py</span>
+
+                    </div>
+
+                </div>
+
+                <div class="layui-form-item" style="margin-top: 20px">
+                    <label for="expwork" class="layui-form-label">
+                        <span class="x-red">*</span>视频导入
+                    </label>
+                    <div class="layui-input-inline">
+                        <button type="button"  name="video"  class="layui-btn uploadNeed" data-type="mp4" data-id="test2" id="test2" style="margin-left: 20px">选择视频</button>
+                        <span>文件类型：mp4</span>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" style="margin-top: 20px">
+                    <label for="expwork" class="layui-form-label">
+                        <span class="x-red">*</span>案例文件
+                    </label>
+                    <div class="layui-input-inline">
+                        <button type="button" name= "example" class="layui-btn uploadNeed" data-type="docx" data-id="test3" id="test3" style="margin-left: 20px">选择文件</button>
+                        <span>文件类型：docx</span>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item layui-upload" style="margin-top: 20px">
+
+                    <label for="expwork" class="layui-form-label">
+                        数据集文件
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="dataUpShow" lay-filter="dataUpShow" value="0" title="无" checked>
+                        <input type="radio" name="dataUpShow" lay-filter="dataUpShow" value="1" title="有">
+                    </div>
+
+
+                    <div id="dataUpBtn" style="display: none">
+                        <div class="layui-input-inline">
+                            <button type="button" class="layui-btn" id="resultButton"
+                                    style="margin-left: 20px;margin-top:10px">点击选择
+                            </button>
+                            <span>文件类型：xlsx、csv、xls</span>
+                        </div>
+
+                        <div class="layui-form-item" id="reTable"
+                             style="display: none;width: 43%;margin-top: 1%;margin-left: 200%">
+                            <table class="layui-table">
+                                <thead>
+                                <tr>
+                                    <th>附件名</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="reList"></tbody>
+                            </table>
+                        </div>
+                        <div class="layui-form-item" id="fileTable"
+                             style="display: none;width: 43%;margin-top: 1%;margin-left: 7%">
+                            <table class="layui-table">
+                                <thead>
+                                <tr>
+                                    <th>附件名</th>
+                                    <th>大小</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="demoList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+<!--            <button class="layui-btn layui-btn-radius layui-btn-primary" data-id="test1" id="picture"-->
+<!--                    data-type="py">上传代码-->
+<!--            </button>-->
+<!--            <button class="layui-btn layui-btn-radius layui-btn-normal" id="video" data-id="test2" data-type="mp4">-->
+<!--                上传视频-->
+<!--            </button>-->
+<!--            <button class="layui-btn layui-btn-radius layui-btn-warm" id="music" data-id="test3" data-type="docx">-->
+<!--                上传案例-->
+<!--            </button>-->
+
+
+            <input name="upid" th:value="${session.loginUser.getId()}" type="hidden">
+
+            <div class="layui-form-item layui-row">
+
+
+                <div class="layui-input-block" style="margin-top:25px;display:flex;">
+
+                    <button type="button" class="layui-btn" id="testListAction" style="display: none">开始上传</button>
+
+
+                    <button class="layui-btn layui-inline layui-bg-green" lay-submit lay-filter="submit"
+                            id="uploadFileBtn2"
+                            style="width: 200px">
+                        立即提交
+                    </button>
+
+
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
+
+<script>
+
+    var files = []; // 记录数据集
+    var threeFile = []
+    var simpleFile = []; // 记录代码
+    var mp4File = []; // 记录视频
+    var docxFile = []; // 记录案例
+    var lookFile;
+
+
+    layui.use(["upload", "form"], function () {
+
+        var upload = layui.upload,
+            form = layui.form;
+        expId = getQueryString("expid")
+
+
+        // upload.render({
+        //     elem: '.uploadNeed'
+        //     , multiple: false
+        //     , auto: false
+        //     , bindAction: '#testListAction'
+        //     // , url: ''
+        //     // , done: function (res, index, upload) { //上传后的回调
+        //     //
+        //     // },
+        //    ,  choose: function (obj) {
+        //         var el = this.item;
+        //         console.log($(el).data().type)
+        //         obj.preview(function (index, file, result) {
+        //             if (getSuffix(file.name) === $(el).data().type){
+        //
+        //                 switch ($(el).data().type){
+        //                     case 'py': //将每次选择的文件追加到文件队列
+        //                         simpleFile = obj.pushFile();
+        //                         // 清空,防止多次上传
+        //                         for (let k in simpleFile) {
+        //                             delete simpleFile[k];
+        //                         }
+        //                         break;
+        //                     case 'mp4': //将每次选择的文件追加到文件队列
+        //                         mp4File = obj.pushFile();
+        //                         // 清空,防止多次上传
+        //                         for (let k in mp4File) {
+        //                             delete mp4File[k];
+        //                         }
+        //                         break;
+        //                     case 'docx': //将每次选择的文件追加到文件队列
+        //                         docxFile = obj.pushFile();
+        //                         // 清空,防止多次上传
+        //                         for (let k in docxFile) {
+        //                             delete docxFile[k];
+        //                         }
+        //                         break;
+        //                     default :
+        //                         console.log($(el).data().type)
+        //                         console.log("不相等")  // 如果没有与表达式相同的值，则执行该代码
+        //
+        //                 }
+        //
+        //
+        //                 obj.pushFile();// 再添加
+        //                 let fileBox = $('#'+$(el).data().id).parent();
+        //                 fileBox.find('.layui-upload-choose').remove();
+        //                 fileBox.append(`<span class="layui-inline layui-upload-choose">${file.name}</span>`);
+        //             }else {
+        //                 layer.msg('文件格式不正确',{icon:5},{time:500})
+        //             }
+        //
+        //             // files[0] = file
+        //         });
+        //     }
+        //     , accept: 'file' //允许上传的文件类型
+        //     , size: 50 * 1024 //最大允许上传的文件大小
+        // })
+
+
+        form.on("radio(dataUpShow)", function (data) {
+            var status = data.value;
+            if (this.value == '0') {
+                $("#dataUpBtn").css('display', 'none')
+            } else if (this.value == '1') {
+                $("#dataUpBtn").css('display', 'block')
+            }
+        });
+
+
+        //添加结果附件
+        var demoListView = $('#demoList')
+            , uploadListIns = upload.render({
+            elem: '#resultButton'
+            , accept: 'file'
+            , exts: 'xlsx|xls|csv'
+            , multiple: true
+            , auto: false
+            , bindAction: '#testListAction'
+            , choose: function (obj) {
+                files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                if (Object.keys(files).length > 0) {
+                    $("#fileTable").css('display', 'block')
+                    $("#resultButton").html("<i\n" +
+                        "                            class=\"layui-icon\"></i>继续上传")
+                }
+
+                //读取本地文件
+                obj.preview(function (index, file, result) {
+                    var tr = $(['<tr id="upload-' + index + '">'
+                        , '<td>' + file.name + '</td>'
+                        , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                        , '<td>'
+                        , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                        , '</td>'
+                        , '</tr>'].join(''));
+
+                    //单个重传
+                    tr.find('.demo-reload').on('click', function () {
+                        obj.upload(index, file);
+                    });
+
+                    //删除
+                    tr.find('.demo-delete').on('click', function () {
+                        delete files[index]; //删除对应的文件
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                    });
+
+                    demoListView.append(tr);
+                });
+            }
+        });
+
+        //添加代码
+        var uploadCode = upload.render({
+            elem: '#test1'
+            , accept: 'file'
+            , exts: 'py'
+            , multiple: false
+            , auto: false
+            , bindAction: '#testListAction'
+            , choose: function (obj) {
+                simpleFile = this.simpleFile = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //将每次选择的文件追加到文件队列
+                simpleFile = obj.pushFile();
+                // 清空,防止多次上传
+                for (let k in simpleFile) {
+                    delete simpleFile[k];
+                }
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+
+                obj.preview(function (index, file, result) {
+                    obj.pushFile();// 再添加
+                    let fileBox = $('#test1').parent();
+                    fileBox.find('.layui-upload-choose').remove();
+                    fileBox.append(`<span class="layui-inline layui-upload-choose">${file.name}</span>`);
+                    // files[0] = file
+                });
+            }
+            , error: function (res) {
+                console.log("添加代码错误")
+                console.log(res)
+            }
+            , success: function (res) {
+                console.log("添加代码成功")
+                console.log(res)
+            }
+            , done: function (res) {
+                console.log("添加代码完成")
+                console.log(res)
+            }
+        });
+
+
+        // //添加视频
+        var uploadVideo = upload.render({
+            elem: '#test2'
+            , accept: 'file'
+            , exts: 'mp4'
+            , field: 'mp4File'
+            , multiple: false
+            , auto: false
+            , bindAction: '#testListAction'
+            , choose: function (obj) {
+                // mp4File = this.mp4File = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //将每次选择的文件追加到文件队列
+                mp4File = obj.pushFile();
+                // 清空,防止多次上传
+                for (let k in mp4File) {
+                    delete mp4File[k];
+                }
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+
+                obj.preview(function (index, file, result) {
+                    obj.pushFile();// 再添加
+                    let fileBox = $('#test2').parent();
+                    fileBox.find('.layui-upload-choose').remove();
+                    fileBox.append(`<span class="layui-inline layui-upload-choose">${file.name}</span>`);
+                    // files[0] = file
+                });
+            }
+
+        });
+        //
+        // //添加案例文件
+        var uploadDocx = upload.render({
+            elem: '#test3'
+            , accept: 'file'
+            , exts: 'docx'
+            , multiple: false
+            , auto: false
+            , field: 'docFile'
+            , bindAction: '#testListAction'
+            , choose: function (obj) {
+                // docxFile = this.docxFile = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //将每次选择的文件追加到文件队列
+                docxFile = obj.pushFile();
+                // 清空,防止多次上传
+                for (let k in docxFile) {
+                    delete docxFile[k];
+                }
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+
+                obj.preview(function (index, file, result) {
+                    obj.pushFile();// 再添加
+                    let fileBox = $('#test3').parent();
+                    fileBox.find('.layui-upload-choose').remove();
+                    fileBox.append(`<span class="layui-inline layui-upload-choose">${file.name}</span>`);
+                    // files[0] = file
+                });
+            }
+            , error: function (res) {
+                console.log("案例文件错误")
+                console.log(res)
+                layer.confirm('创建成功，可到实验指定模块中授权给学生使用',
+                    {
+                        btn: ["确定"],
+                        btn1: function (index) {
+                            layer.close(index)
+                            location.reload()
+                        }
+                    })
+
+            }
+
+        });
+
+
+        // addUpload("test2","mp4","mp4File")
+
+
+        //监听提交
+        form.on('submit(submit)', function (data) {
+
+            // console.log(data.field)
+            subFlag = 0;
+            if (Object.keys(simpleFile).length === 0) {
+                subFlag = 1;
+                layer.msg("示例代码不能为空！！！")
+                return false
+            }
+
+            if (Object.keys(mp4File).length === 0) {
+                subFlag = 2;
+                layer.msg("场景导入视频不能为空！！！")
+                return false
+            }
+
+            if (Object.keys(docxFile).length === 0) {
+                subFlag = 3;
+                layer.msg("案例文件不能为空！！！")
+                return false
+            }
+
+            if ($('input[name="dataUpShow"]:checked').val() === 1 && Object.keys(files).length === 0) {
+                subFlag = 4;
+                layer.msg("数据集文件不能为空！！！")
+                return false
+            }
+
+
+            $('#testListAction').trigger('click');
+
+            return false;
+        });
+
+        // 提交到后台
+        $("#testListAction").on("click", function () {
+
+            // debugger
+            var form = new FormData(document.getElementById("upForm"));
+            // console.log(form)
+            for (let i in files) {
+                console.log(files[i].name)
+                form.append("files", files[i]);
+            }
+
+            form.append("dataTag", $('input[name="dataUpShow"]:checked').val())
+
+
+            // var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+            $.ajax({
+                url: '/addExpStep1',
+                type: "post",
+                dataType: "json",
+                async: false,
+                contentType: false,
+                processData: false,
+                data: form,
+                success: function (result) {
+
+                    console.log(result)
+                    if (result.code == 200) {
+
+                        //上传成功，但是出现接口上传异常报错
+                        console.log("成功")
+                        // layer.msg('创建成功', {icon: 6, time: 1000});
+                        // setTimeout("location.reload()", 1000)
+
+                        layer.confirm('创建成功，可到实验指定模块中授权给学生使用',
+                            {
+                                btn: ["确定"],
+                                btn1: function (index) {
+                                    layer.close(index)
+                                    location.reload()
+                                }
+                            })
+
+
+                    } else {
+                        console.log("成功但失败")
+
+                        layer.msg(result.msg, {time: 5000});
+                    }
+                },
+                error: function (result) {
+                    console.log(result)
+                    console.log("error")
+                    layer.msg(result.msg, {time: 5000})
+                }
+            })
+        });
+
+
+    });
+
+
+</script>

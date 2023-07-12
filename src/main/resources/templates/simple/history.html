@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <style>
+        .editor {
+            background-color: white;
+            margin: 10px;
+            min-height: 20px;
+            max-height: 180px;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            overflow: auto;
+            white-space: pre-line;
+        }
+
+        .out {
+            border-bottom: 1px solid #CCC;
+        }
+
+        .text {
+            margin-top: 5px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="layui-container">
+
+    <div style="margin-top: 50px">
+        <xblock>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:left"
+               href="javascript:location.reload();" title="刷新">
+                <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+            <span class="x-right" style="line-height:50px;float: right;font-size: 16px">共有数据：<span
+                    id="num"></span> 条</span>
+        </xblock>
+        <table class="layui-table" lay-skin="line" lay-size="lg" style="font-size: 20px;">
+            <thead>
+            <th>序号</th>
+            <th>实验名称</th>
+            <th>提交时间</th>
+            <th>代码</th>
+            <th>结果</th>
+            </thead>
+            <tbody id="results">
+
+            </tbody>
+        </table>
+        <div id="pager" style="text-align: center;"></div>
+
+    </div>
+
+</div>
+</body>
+
+<script th:inline="javascript">
+
+    id = [[${session.loginUser.getId()}]]
+    sname = [[${session.loginUser.getUsername()}]]
+    html = '';
+    mPageSize = 10
+    getHistory()
+
+    // 分页获取实验代码
+    function getHistory(pageNo) {
+
+        pageNo = pageNo || 1
+        $.get("/getHistory/" + pageNo + "/" + mPageSize + "?id=" + id, function (res) {
+            if (res.code === 200) {
+                // console.log(res)
+                if (res.datas.length > 0) {
+
+                    $("#num").html(res.total);
+                    fillCodes(res.datas, (pageNo - 1) * mPageSize);
+                    // $.each(res.datas, function (i, item) {
+                    //     // console.log("div")
+                    //     // path = encodeURIComponent(encodeURIComponent('stuCode/' + sname + '/' + item.codeurl))
+                    //     html += '<div class="editor">' +
+                    //         '        <div style="height: 100px;overflow: auto" id="editor' + item.id + '">' +
+                    //         // initDiv(path,"editor"+item.id)+
+                    //         '        </div>' +
+                    //         '<span class="text">创建时间：' + item.createtime + '</span>' +
+                    //         '  <a onclick="xadmin.open(\'查看结果\',\'simple_allResult.html?resultUrl=' + item.resulturl + '&figCount='+item.figCount+'&csvCount='+item.csvCount+'\',800,600)" title="查看结果"  href="javascript:;">' +
+                    //         '          <i class="iconfont" style="font-size: 12px;">&nbsp;&nbsp; &#xe6e6;查看结果</i>' +
+                    //         '   </a>' +'</div>';
+                    // })
+                    // $(".content").html(html);
+                    // $.each(res.datas,function (i,item){
+                    //     path = 'stuCode/' + sname + '/' + item.codeurl
+                    //     initEditor("editor"+item.id,path)
+                    // })
+                    layui.use('laypage', function () {
+                        var laypage = layui.laypage;
+
+                        //执行一个laypage实例
+                        laypage.render({
+                            elem: 'pager', //注意，这里的 test1 是 ID，不用加 # 号
+                            count: res.total, //数据总数，从服务端得到
+                            limit: mPageSize,
+                            curr: pageNo,
+                            prev: "<",
+                            next: ">",
+                            groups: 2,
+                            limits: [10, 20, 40, 60, 80],
+                            layout: ['prev', 'page', 'next', 'limit', 'refresh', 'skip'],
+                            skip: true, //是否开启跳页
+                            jump: function (obj, isfirst) {
+                                if (!isfirst) {
+                                    mPageSize = obj.limit;
+                                    getHistory(obj.curr, obj.limit)
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    $("#results").html("还未执行过代码");
+                }
+            } else {
+                // console.log("失败")
+                $("#results").html(res.msg)
+            }
+        })
+
+    }
+
+    function fillCodes(codes, beginIndex) {
+        var html = "";
+        $.each(codes, function (i, item) {
+            /* console.log(item);
+             console.log(html);*/
+            str = 'stuCode/' + sname + '/' + item.codeurl;
+            expname = '';
+            if (item.expname!=null){
+                expname = item.expname
+            }else {
+                expname = "自主实验"
+            }
+            html += ' <tr>' +
+                '                <td>' + (i + 1 + beginIndex) + '</td>\n' +
+                '                <td>' + expname + '</td>\n' +
+                '                <td>' + item.createtime + '</td>\n' +
+                '                <td> <button style="width: 150px" type="button" class="layui-btn"\n' +
+                '                    onclick="xadmin.open(\'点击预览\',\'simple_historyCodeDown.html?storagePath=' + str + '&flag=0\',900,600)">查看代码\n' +
+                '            </button></td>' +
+                '                <td> <button style="width: 150px" type="button" class="layui-btn layui-bg-blue"\n' +
+                '                    onclick="xadmin.open(\'查看结果\',\'simple_allResult.html?resultUrl=' + item.resulturl + '&figCount='+item.figCount+'&csvCount='+item.csvCount+'\',900,600)">查看结果\n' +
+                '            </button></td>\n' +
+                '            </tr>'
+
+        })
+        $('#results').html(html);
+    }
+
+</script>
+
+
+</html>

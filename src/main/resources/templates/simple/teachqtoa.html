@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body ">
+
+                </div>
+                <div class="layui-card-body ">
+                    <div class="layui-text" style="float: right;font-size: 16px;margin-bottom:10px">
+                        <span id="unAnswer"></span>
+                        <span id="answered" style="margin-left: 20px"></span>
+                    </div>
+
+                    <table class="layui-table">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>学号</th>
+                            <th>姓名</th>
+                            <th>问题</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="qtoa" style="white-space: pre-line">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script th:inline="javascript">
+
+    getQto();
+
+    function getQto() {
+        html = '';
+        flag = 0;
+        unAnsCount = 0
+        answeredCount = 0
+        var qtoa = {
+            "gradeid": getQueryString("gradeid"),
+        }
+        // $.get("/shares?flag="+flag, function (res) {
+        $.post("/getQtoaTeach", qtoa, function (res) {
+            // console.log(res);
+            if (res.code == 200) {
+                // console.log(res.datas);
+                $.each(res.datas, function (i, item) {
+                    status = ''
+                    if (item != null) {
+                        if (item.answer == '') {
+                            status = '<td style="color:red">未回答</td>'
+                            unAnsCount += 1
+                        } else {
+                            status = '<td style="color:green">已回答</td>'
+                            answeredCount += 1
+                        }
+                        // console.log("实验id:"+item.id)
+                        path = encodeURIComponent(encodeURIComponent(item.storagePath))
+                        html +=
+                            '<tr>' +
+                            '<td>' + (i + 1) + '</td>' +
+                            '<td>' + item.username + '</td>' +
+                            '<td>' + item.realname + '</td>' +
+                            '<td>' + item.question + '</td>' +
+                            status +
+                            // '<td>' + status + '</td>' +
+                            '<td>' +
+                            '   <a onclick="xadmin.open(\'回答情况\',\'/pages/add_anwerqtoa?id=' + item.id + '&answer=' + item.answer + '\',600,400)" title="查看"  href="javascript:;">' +
+                            '          <i class="iconfont" style="font-size: 15px;">&#xe6e6;</i>' +
+                            '   </a>' +
+                            '</td>' +
+                            // '<th><a href="/download?codepath=null&id='+item.id+'&count='+item.downloadCount+'&uploadpath=' + item.storagePath + '">下载</a></th>' +
+                            '</tr>';
+                    }
+                });
+                $("#qtoa").html(html);
+                $("#answered").html('已回答：' + answeredCount)
+                $("#unAnswer").html('未回答：' + unAnsCount)
+
+            }
+        }, "json");
+    }
+
+</script>
+
+</html>

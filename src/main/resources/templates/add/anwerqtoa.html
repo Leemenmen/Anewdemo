@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <style>
+        #editor {
+            margin: 20px;
+            width: 90%;
+            height: 600px;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-side" style="width:85%;margin-left:2%;margin-top: 1%;">
+
+        <div class="layui-row" id="noanswer">
+            <div class="layui-form-item layui-form-text">
+                <textarea lay-verify="required" placeholder="请输入答案" class="layui-textarea" id="question"></textarea>
+            </div>
+            <div class="layui-form-item" style="margin-top: 20px;">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1"
+                        onclick="putAnswer()" style="width: 12%;margin-right: 3%;">立即提交
+                </button>
+            </div>
+        </div>
+
+        <div class="layui-collapse" style="margin-top: 1%;white-space: pre-line;font-size: 16px;" id="answer">
+
+        </div>
+
+    </div>
+</div>
+</body>
+<script>
+    id = getQueryString("id");
+    answer = getQueryString("answer");
+    // console.log("===answer==="+answer)
+    if (answer){
+        //answer不为空
+        $("#noanswer").css('display','none');
+        $("#answer").html(answer);
+    }
+    function putAnswer() {
+        if ($("#question").val() === '') {
+            layer.msg('回答不能为空');
+        } else {
+            var question = {
+                "id": id,
+                "answer": $("#question").val(),
+            }
+            // console.log(question);
+            $.post("/aQuestion", question, function (res) {
+                // console.log(res)
+                if (res.code == 200) {
+                    //获取index
+                    var index = parent.layer.getFrameIndex(window.name);
+                    //关闭当前弹出的层
+                    setTimeout(function () {
+                        parent.layer.close(index)
+                    }, 330);//延迟
+                    layer.msg('回答成功');
+                    parent.getQto();
+                } else {
+                    layer.msg('失败');
+
+                }
+
+            }, "json")
+        }
+
+    }
+</script>
+
+
+
+</html>

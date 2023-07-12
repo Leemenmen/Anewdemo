@@ -1,0 +1,253 @@
+<!doctype html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>数据挖掘虚拟仿真实验平台</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body class="index">
+<!-- 顶部开始 -->
+<div class="container">
+    <div class="logo">
+        <a href="/index" th:text="数据挖掘虚拟仿真实验平台" style="font-size: 16px;">X-admin v2.2</a></div>
+    <div class="left_open">
+        <a><i title="展开左侧栏" class="iconfont">&#xe699;</i></a>
+    </div>
+    <ul class="layui-nav right" lay-filter="">
+        <li class="layui-nav-item">
+            <a href="javascript:;" th:text="${session.loginUser.getRealname()}">admin</a>
+            <dl class="layui-nav-child">
+                <!-- 二级菜单 -->
+                <dd>
+                    <a onclick="xadmin.open('个人信息','/pages/simple_self',500,400)">个人信息</a></dd>
+                <dd>
+                    <a href="javascript:;" class="close-all" data-type="closeall">退出</a></dd>
+            </dl>
+        </li>
+
+    </ul>
+</div>
+<!-- 顶部结束 -->
+<!-- 中部开始 -->
+<!-- 左侧菜单开始 -->
+<div class="left-nav">
+    <div id="side-nav">
+        <ul id="nav">
+<!--            <li>-->
+<!--                <a onclick="xadmin.add_tab('考核结果上传','/pages/simple_CheckworkCanUploadFile?expid=1&expName=数据爬取')">-->
+<!--                    <i class="iconfont">&#xe705;</i>-->
+<!--                    <cite>考核结果上传</cite></a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a onclick="xadmin.add_tab('考核首次测试上传','/pages/simple_oraCheckworkTest?expid=1&expName=数据爬取')">-->
+<!--                    <i class="iconfont">&#xe705;</i>-->
+<!--                    <cite>考核首次测试上传</cite></a>-->
+<!--            </li>-->
+            <li>
+                <a onclick="xadmin.add_tab('实验室规则','/pages/simple_rule')">
+                    <i class="iconfont">&#xe705;</i>
+                    <cite>实验室规则</cite></a>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="实验模块">&#xe6b3;</i>
+                    <cite>实验模块</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu" id="exps">
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="共享模块">&#xe71d;</i>
+                    <cite>共享模块</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu">
+                    <li>
+                        <a onclick="xadmin.add_tab('代码共享','/pages/simple_share?flag=0')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>代码共享</cite></a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('数据共享','/pages/simple_share?flag=1')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>数据共享</cite></a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('我的共享','/pages/simple_selfShare')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>我的共享</cite></a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a onclick="xadmin.add_tab('实验问答','/pages/simple_qtoa')">
+                    <i class="iconfont">&#xe6b2;</i>
+                    <cite>实验问答</cite></a>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="我的考核">&#xe74c;</i>
+                    <cite>我的考核</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu" id="checks">
+                </ul>
+            </li>
+<!--            <li>-->
+<!--                <a onclick="xadmin.add_tab('我的考核','/pages/simple_checkwork')">-->
+<!--                    <i class="iconfont">&#xe74c;</i>-->
+<!--                    <cite>我的考核</cite></a>-->
+<!--                <ul class="sub-menu" id="checks">-->
+<!--                </ul>-->
+<!--            </li>-->
+            <li>
+                <a onclick="xadmin.add_tab('历史代码','/pages/simple_history.html')">
+                    <i class="iconfont">&#xe842;</i>
+                    <cite>历史代码</cite></a>
+            </li>
+
+        </ul>
+    </div>
+</div>
+<!-- 左侧菜单结束 -->
+<!-- 右侧主体开始 -->
+<div class="page-content">
+    <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+        <ul class="layui-tab-title">
+            <li class="home">
+                <i class="layui-icon">&#xe68e;</i>我的桌面
+            </li>
+        </ul>
+        <div class="layui-unselect layui-form-select layui-form-selected" id="tab_right">
+            <dl>
+                <dd data-type="this">关闭当前</dd>
+                <dd data-type="other">关闭其它</dd>
+                <dd data-type="all">关闭全部</dd>
+            </dl>
+        </div>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <iframe src='/pages/welcome1' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+            </div>
+        </div>
+        <div id="tab_show"></div>
+    </div>
+</div>
+<div class="page-content-bg"></div>
+<style id="theme_style"></style>
+<!-- 右侧主体结束 -->
+<!-- 中部结束 -->
+
+</body>
+
+
+<script th:inline="javascript">
+    var gradeid = [[${session.loginUser.getGradeid()}]];
+    // console.log("===gradeid===:"+gradeid);
+    //将实验名称遍历到实验模块下方
+    var messages = [[${session.loginUser.getExps()}]]; //包含实验的所有信息
+    // console.log(messages)
+    html1 = '';
+    html2 = '';
+    html3 = ''; // 实验分步骤后学生实验模块对应界面
+    html4 = ''; // 实验分步骤后学生考核对应界面
+    $.each(messages, function (i, item) {
+        // console.log(item.expname);
+        if (item != null) {
+            href1 = '/pages/exp_expsummary?expid=' + item.id //页面携带实验id
+            href2 = '/pages/simple_CheckworkCanUploadFile?expid=' + item.id +'&expName='+ item.expname //页面携带实验id
+            href3 = '/pages/step_expStuStep?expid='+item.id+'&expName='+item.expname
+            href4 = '/pages/step_totalStepRecord?expid='+item.id+'&expName='+item.expname
+
+
+            // console.log(href);
+            html1 +=
+                '<li id="' + item.id + '">' +
+                '    <a onclick="xadmin.add_tab(\'' + item.expname + '\',\'' + href1 + '\')" >' +
+                '        <i class="iconfont">&#xe6a7;</i>' +
+                '        <cite>' + item.expname + '</cite>' +
+                '    </a>' +
+                '</li>';
+            html2 +=
+                '<li id="' + item.id + '">' +
+                '    <a onclick="xadmin.add_tab(\'' + item.expname + '\',\'' + href2 + '\')" >' +
+                '        <i class="iconfont">&#xe6a7;</i>' +
+                '        <cite>' + item.expname + '</cite>' +
+                '    </a>' +
+                '</li>';
+            html3 +=
+                '<li id="' + item.id + '">' +
+                '    <a onclick="xadmin.add_tab(\'' + item.expname + '\',\'' + href3 + '\')" >' +
+                '        <i class="iconfont">&#xe6a7;</i>' +
+                '        <cite>' + item.expname + '</cite>' +
+                '    </a>' +
+                '</li>';
+            html4 +=
+                '<li id="' + item.id + '">' +
+                '    <a onclick="xadmin.add_tab(\'' + item.expname + '\',\'' + href4 + '\')" >' +
+                '        <i class="iconfont">&#xe6a7;</i>' +
+                '        <cite>' + item.expname + '</cite>' +
+                '    </a>' +
+                '</li>';
+        }
+    });
+    $("#exps").append(html3+'<li id="0">' +
+        '    <a onclick="xadmin.add_tab(\'自主实验\',\'/pages/exp_expSelfwork?expid=0\')" >' +
+        '        <i class="iconfont">&#xe6a7;</i>' +
+        '        <cite>自主实验</cite>' +
+        '    </a>' +
+        '</li>');
+    $("#checks").append(html4);
+</script>
+<script>
+    //js代码
+
+    layui.use(['element', 'layer'], function () {
+        var $ = layui.jquery;
+        var element = layui.element;//Tab的切换功能，切换事件监听等，需要依赖element模块
+        var layer = layui.layer;
+        var active = {
+            //在这里给active绑定事件，后面可通过active调用这些事件
+            tabDeleteAll: function (ids) {//删除所有
+                $.each(ids, function (i, item) {
+                    element.tabDelete("xbs_tab", item);//ids是一个数组，里面存放了多个id，调用tabDelete方法分别删除
+                })
+            }
+        };
+        $(".close-all").click(function () {
+            layer.confirm('确定退出吗？', {title: false, closeBtn: false, skin: 'layui-layer-molv'}, function () {
+
+                if ($(this).attr("data-type") == "closeall") {
+                    var tabtitle = $(".layui-tab-title li");
+                    var ids = new Array();
+                    $.each(tabtitle, function (i) {
+                        ids[i] = $(this).attr("lay-id");
+                    });
+                    active.tabDeleteAll(ids);
+                }
+                sessionStorage.clear();
+                location.href = '/logout';
+            })
+        })
+
+
+    });
+
+</script>
+
+</html>

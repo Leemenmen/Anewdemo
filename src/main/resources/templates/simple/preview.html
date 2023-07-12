@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>数据挖掘虚拟仿真实验平台</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/css/font.css">
+    <link rel="stylesheet" href="/css/xadmin.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/xadmin.js"></script>
+    <script type="text/javascript" src="/js/new.js"></script>
+
+    <!--        <script language=”javascript” type=“text/javascript” src=“/js/index.js”></script>-->
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>-->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <style>
+        .comment {
+            width: 100%; /*自动适应父布局宽度*/
+            overflow: auto;
+            word-break: break-all;
+            /*在ie中解决断行问题(防止自动变为在一行显示，主要解决ie兼容问题，ie8中当设宽度为100%时，文本域类容超过一行时，
+            当我们双击文本内容就会自动变为一行显示，所以只能用ie的专有断行属性“word-break或word-wrap”控制其断行)*/
+        }
+    </style>
+</head>
+<body>
+
+<div style="display: flex" class="layui-colla-content">
+    <div>
+        <form class="layui-form" action="" id="test">
+
+            <div class="layui-col-md7 layui-col-space10 " style="font-size: 15px;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">实验名称</label>
+                    <div class="layui-input-inline" style="width: 65%">
+                        <input id="expname" type="text" name="expname"
+                               readonly="true" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">实验任务</label>
+                    <div class="layui-input-inline">
+                    <textarea style="width: 700px;height: 100px;" type="text"
+                              name="exptarget" id="exptarget"
+                              readonly="true"
+                              autocomplete="off" class="layui-input"
+                              rows=80 cols=120>
+                    </textarea>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">实验过程</label>
+                    <div class="layui-input-inline" style="width: 45%">
+                    <textarea id="expProcess" lay-verify="required" type="text" name="expprocess"
+                              placeholder="请输入实验过程" autocomplete="off"
+                              style="width: 700px;height: 180px;"
+                              class="layui-input" rows=80 cols=120
+                              onpropertychange="this.style.posHeight=this.scrollHeight "></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">实验结果</label>
+                    <div class="layui-input-inline" style="width: 45%">
+                    <textarea id="expresult" lay-verify="required" type="text" name="expresult"
+                              placeholder="请输入实验结果" autocomplete="off"
+                              style="width: 700px;height: 80px;"
+                              class="layui-input" rows=40 cols=120
+                              onpropertychange="this.style.posHeight=this.scrollHeight "></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-upload" id="upload2">
+
+                    <label class="layui-form-label">上传代码</label>
+                    <div class="layui-input-inline">
+                        <!--                <input type="file"  id="test2" style="margin-left: 20px"/>-->
+                        <button type="button" class="layui-btn" id="test2" style="margin-left: 20px">选择代码</button>
+                        <button id="hideUpload2" type="button" style="display: none"></button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="layui-form-item layui-row">
+
+
+                <button class="layui-btn prelook" type="button" lay-submit="" onclick="prelook()"
+                        style="width: 100px">
+                    预览
+                </button>
+
+                <button class="layui-btn layui-inline" lay-submit="" lay-filter="submit" id="uploadFileBtn2"
+                        style="width: 100px">
+                    点击提交
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="layui-collapse " style="display:none;width: 40%;margin-left: 2%" id="look">
+        <button class="layui-btn layui-bg-green " onclick="prelook()"
+                style="width: 200px">
+            更新
+        </button>
+        <div class="layui-colla-item ">
+            <h4 class="layui-colla-title">实验过程</h4>
+            <div class="layui-colla-content layui-show " id="process" style="white-space: pre-line;font-size: 16px;">
+            </div>
+        </div>
+        <div class="layui-colla-item ">
+            <h4 class="layui-colla-title">实验结果</h4>
+            <div class="layui-colla-content layui-show" id="result" style="white-space: pre-line;font-size: 16px;">
+            </div>
+        </div>
+        <div class="layui-colla-item ">
+            <h4 class="layui-colla-title">实验代码</h4>
+            <div class="layui-colla-content layui-show" id="recordcode" style="white-space: pre-line;font-size: 16px;">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--    <button class="layui-btn layui-bg-green"-->
+<!--            onclick="xadmin.open('预览','simple_testPre.html',500,300)" style="width: 200px">-->
+<!--        预览-->
+<!--    </button>-->
+<!--</div>-->
+
+</body>
+<script>
+    // initForm(parent.document.getElementsByTagName("tr")[index]);
+    files = []
+
+    // $(".prelook").click(function (){
+    //     $("#look").css('display','block')
+    //     $("#process").html($('#expProcess').val())
+    //     $("#result").html($('#expresult').val())
+    //     if (files[0]){
+    //         readBlob(files[0], 'recordcode')
+    //     }else {
+    //         layer.msg('代码不能为空', {icon:5, time:800})
+    //     }
+    //
+    // })
+
+    function prelook() {
+
+        if ($('#expProcess').val() && $('#expresult').val() && files[0]) {
+
+                $("#look").css('display', 'block')
+                $("#process").html($('#expProcess').val())
+                $("#result").html($('#expresult').val())
+                readBlob(files[0], 'recordcode')
+        }
+
+    }
+
+
+    layui.use(["jquery", "upload", "form", "layer", "element"], function () {
+
+        var $ = layui.$,
+            element = layui.element,
+            layer = layui.layer,
+            upload = layui.upload,
+            form = layui.form;
+
+
+        //监听提交
+        form.on('submit(submit)', function (data) {
+
+            // console.log("长度为"+Object.keys(files).length);
+            // console.log(data.field)
+            //若长度>0,则说明选中了文件，执行upload.render中choose函数
+            if (Object.keys(files).length > 0) {
+                // console.log(fname);
+                // console.log(getSuffix(fname))
+
+                $('#hideUpload2').trigger('click');
+
+            } else {
+                layer.msg("请选择上传文件")
+            }
+            return false;
+        });
+
+
+        //文件上传
+        var uploadInst = upload.render({
+            elem: '#test2'         //绑定点击按钮
+            , url: '/addRecordTest'   //访问后台路径
+            , accept: 'file'               //图片格式
+            , exts: 'py'
+            , auto: false                     //取消自动上传
+            , method: 'post'                 //请求上传的 http 类型
+            , bindAction: '#hideUpload'       //绑定真正的上传按钮
+            , choose: function (obj) { //选择文件后的回调函数
+                //将每次选择的文件追加到文件队列
+                files = this.files = obj.pushFile();
+                // 清空,防止多次上传
+                for (let k in files) {
+                    delete files[k];
+                }
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+
+
+                obj.preview(function (index, file, result) {
+                    obj.pushFile();// 再添加
+                    files[0] = file
+                    let fileBox = $('#test2').parent();
+                    fileBox.find('.layui-upload-choose').remove();
+                    fileBox.append(`<span class="layui-inline layui-upload-choose">${file.name}</span>`);
+                    fname = file.name;
+                    console.log(fname)
+
+                });
+            }
+            , before: function (obj) {
+                this.data = {
+                    "expid": expId,
+                    "expprocess": $('#expprocess').val(),
+                    "expresult": $('#expresult').val(),
+                    "expname": $('#expname').val(),
+                }
+            }
+            , done: function (res) { //执行上传请求后的回调
+
+                //如果上传失败
+                if (res.code === 200) {
+                    //上传成功
+                    location.reload();
+                } else {
+                    return layer.msg('预览失败，请稍后重新尝试！');
+                }
+
+            }
+
+        });
+    })
+</script>
+</html>

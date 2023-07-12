@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.newdmsp.demo.dao.RecordMapper">
+
+
+    <insert id="addRecord" parameterType="com.newdmsp.demo.entity.Record" keyProperty="id" useGeneratedKeys="true">
+
+        insert into exprecord (expid, sid, gid, expresult, expprocess, recordcode, createTime, lastTime, flag, png, csv,
+                               experience)
+        values (#{expid}, #{sid}, #{gid}, #{expresult}, #{expprocess}, #{recordcode}, #{createTime}, #{lastTime}, 0,
+                #{png}, #{csv}, #{experience})
+
+    </insert>
+    <insert id="addDesc" parameterType="com.newdmsp.demo.entity.Record" keyProperty="id" useGeneratedKeys="true">
+        insert into exprecord(expid, sid, gid, videoDesc)
+        values (#{expid}, #{sid}, #{gid}, #{videoDesc})
+    </insert>
+    <update id="addDescSet">
+
+        update exprecord
+        <set>
+            <if test="#{dataDesc}!=null">
+                ${dataDesc} = #{dataDescVal}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <update id="upRecord">
+        update exprecord
+        set score = #{score}
+        where id = #{id}
+    </update>
+    <update id="submitRecord">
+        update exprecord
+        set flag = 1
+        where id = #{id}
+    </update>
+    <update id="updateStuRecord">
+        update exprecord
+        set expprocess = #{expprocess},
+            expresult  = #{expresult},
+            experience = #{experience},
+            totalDesc = #{totalDesc},
+            dataDesc = #{dataDesc},
+            videoDesc = #{videoDesc},
+            lastTime   = #{lastTime},
+            flag       = #{flag},
+            png        = #{png},
+            csv        = #{csv},
+            count      = count + 1,
+            recordcode = #{recordcode}
+        where id = #{id}
+
+    </update>
+
+
+    <update id="updateStepRecord">
+        update exprecord
+        set expprocess = #{expprocess},
+            expresult  = #{expresult},
+            experience = #{experience},
+            lastTime   = #{lastTime},
+            flag       = #{flag},
+            png        = #{png},
+            csv        = #{csv},
+            count      = count + 1,
+            recordcode = #{recordcode},
+            videoDesc  = #{videoDesc},
+            dataDesc   = #{dataDesc},
+            totalDesc  = #{totalDesc},
+            where id = #{id}
+
+    </update>
+    <update id="dynamicUpTable">
+        UPDATE exprecord SET
+        <foreach collection="upDesMap" item="val" index="key" separator=",">
+            ${key} = #{val}
+        </foreach>
+        WHERE id = #{id}
+    </update>
+    <update id="submitStepRecord">
+        update exprecord
+        set flag = 2
+        where id = #{id}
+    </update>
+    <update id="submitRecordTime">
+        update exprecord
+        set flag = 1,
+            createTime = #{format}
+        where id = #{recordId}
+    </update>
+    <!--    <update id="updateStuRecord">-->
+    <!--        update exprecord-->
+
+    <!--        <set>-->
+    <!--            <if test="expprocess!=null">expprocess = #{expprocess},</if>-->
+    <!--            <if test="expresult!=null"> expresult = #{expresult},</if>-->
+    <!--            <if test="experience!=null"> experience = #{experience},</if>-->
+    <!--            <if test="lastTime!=null">lastTime = #{lastTime},</if>-->
+    <!--            <if test="flag!=null">flag = #{flag},</if>-->
+    <!--            <if test="png!=null">png = #{png},</if>-->
+    <!--            <if test="csv!=null">csv = #{csv},</if>-->
+
+    <!--            count = count +1,-->
+    <!--            <if test="recordcode!=null">,recordcode = #{recordcode},</if>-->
+    <!--        </set>-->
+    <!--        where id = #{id}-->
+
+    <!--    </update>-->
+    <select id="findRecord" resultType="com.newdmsp.demo.entity.Record">
+        select er.*, e.expname, e.expwork
+        from exprecord er,
+             exp e
+        where er.expid = #{expId}
+          and er.sid = #{id}
+          and er.expid = e.id
+    </select>
+
+    <select id="getExpAndRecord" resultType="com.newdmsp.demo.entity.Record">
+        SELECT e.expwork, e.expcodeurl, e.exptarget, e.exampleDoc, e.expVideoPath, e.flag eflag, er.*
+        FROM `exp` e
+                 LEFT JOIN `exprecord` er ON e.id = er.expid
+        WHERE e.id = #{expId}
+          AND er.sid = #{sid}
+    </select>
+
+</mapper>
