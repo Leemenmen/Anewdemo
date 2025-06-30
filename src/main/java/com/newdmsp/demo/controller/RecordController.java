@@ -1,6 +1,7 @@
 package com.newdmsp.demo.controller;
 
 import com.newdmsp.demo.entity.*;
+import com.newdmsp.demo.entity.Record;
 import com.newdmsp.demo.service.ExpService;
 import com.newdmsp.demo.service.RecordService;
 import com.newdmsp.demo.service.ScoreService;

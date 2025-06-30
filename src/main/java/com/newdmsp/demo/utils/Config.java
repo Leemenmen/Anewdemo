@@ -2,15 +2,21 @@ package com.newdmsp.demo.utils;
 
 
 import com.newdmsp.demo.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
 
 public class Config {
 
+//     static Environment environment;
+
     public static String CURRENT_USERNAME = "loginUser";
 
-//    public static String ROOT_PATH = "F:/project/Anewdemo/";
-    public static String ROOT_PATH = "/opt/pubWebPro/";
+
+//    public static String ROOT_PATH =  environment.getProperty("storage.root.path");
+    public static String ROOT_PATH = "E:/dmsp/Anewdemo";
 
 
     //Result

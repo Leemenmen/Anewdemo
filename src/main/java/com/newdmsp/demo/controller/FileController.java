@@ -388,7 +388,7 @@ public class FileController {
         Map<String, Object> result = new HashMap<String, Object>();
         //word文件地址放在src/main/webapp/下
         //表示到项目的根目录（webapp）下，要是想到目录下的子文件夹，修改"/"即可
-        String filePath = java.net.URLDecoder.decode(ROOT_PATH+"DocFile/doc/"+path, "UTF-8");
+        String filePath = java.net.URLDecoder.decode(ROOT_PATH+"/DocFile/doc/"+path, "UTF-8");
         try {
             //读取Word中的文本内容包含表格
             String wordhtml = WordRead.readWordImgToHtml(filePath);

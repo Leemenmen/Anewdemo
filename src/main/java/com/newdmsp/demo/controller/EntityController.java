@@ -2,6 +2,7 @@ package com.newdmsp.demo.controller;
 
 
 import com.newdmsp.demo.entity.*;
+import com.newdmsp.demo.entity.Record;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

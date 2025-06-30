@@ -12,3 +12,6 @@ jasypt:
     password: wdjwijoq3i198hfurh94024hi2heh18
     # 加密所采用的算法
     algorithm: PBEWITHHMACSHA512ANDAES_256
+storage:
+  root:
+    path: E:\dmsp\Anewdemo

@@ -19,7 +19,7 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
         registry.addResourceHandler("/css/**").addResourceLocations("classpath:/static/css/");
         registry.addResourceHandler("/images/**").addResourceLocations("classpath:/static/images/");
         registry.addResourceHandler("/pictures/**").addResourceLocations("file:///"+ROOT_PATH+"/stuCode/");
-        registry.addResourceHandler("/resultPic/**").addResourceLocations("file:///"+ROOT_PATH);
+        registry.addResourceHandler("/resultPic/**").addResourceLocations("file:///"+ROOT_PATH+"/");
 //
 //        registry.addResourceHandler("/pictures/**").addResourceLocations("file:/opt/pubWebPro/stuCode/");
 //        registry.addResourceHandler("/resultPic/**").addResourceLocations("file:/opt/pubWebPro/");
