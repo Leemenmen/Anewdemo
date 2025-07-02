@@ -151,11 +151,12 @@ function runEditorTest(context, expId) {
             let figure;
             let resultButton;
             if (res.code === 200) {
+                console.log(res)
 
 
                 resultButton = "<button class=\"layui-btn layui-bg-blue\"\n" +
                     "                        style=\"margin-left: 30px;\"\n" +
-                    "                        onClick=\"xadmin.open('查看结果','/pages/simple_allResult.html?csvCount="+res.data.csvCount+"&figCount="+res.data.figCount+"&resulturl="+res.data.figName+"',850,650)\"\n" +
+                    "                        onClick=\"xadmin.open('查看结果','/pages/simple_allResult.html?csvCount="+res.data.csvCount+"&figCount="+res.data.figCount+"&figName="+res.data.figName+"&resultUrl="+res.data.codeName+"',850,650)\"\n" +
                     "                        id=\"resultButton\">查看结果" +
                     "                </button>" ;
                 layer.msg("运行成功", {icon: 6, time: 900})

@@ -16,7 +16,14 @@
     <script type="text/javascript" src="/js/new.js"></script>
     <script src="/lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="/js/xadmin.js"></script>
-    <script type="text/javascript" src="/ace-builds-master/src-noconflict/ace.js"></script>
+<!--    <script type="text/javascript" src="/ace-builds-master/src-noconflict/ace.js"></script>-->
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.52.0/lib/codemirror.css">-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.0/lib/codemirror.js"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.0/mode/python/python.js"></script>-->
+
+    <script type="text/javascript" src="/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" type="text/css" href="/codemirror/lib/codemirror.css">
+    <script type="text/javascript" src="/codemirror/mode/python.js"></script>
 
     <style>
         #editor {
@@ -26,6 +33,11 @@
             bottom: 10px;
             left: 10px;
             right: 10px;
+        }
+        .CodeMirror{
+            font-size: 20px;
+            min-height: 50vh;
+            max-height: 85vh;
         }
     </style>
 </head>
@@ -77,19 +89,31 @@
 
     </div>
     <div id="buttons" style="margin-top: 3%">
+<!--        <button class="layui-btn"-->
+<!--                onclick="saveCode(ace.edit('editor').getValue())"-->
+<!--                style="margin-left: 30px;">保存-->
+<!--        </button>-->
         <button class="layui-btn"
-                onclick="saveCode(ace.edit('editor').getValue())"
-                style="margin-left: 30px;">保存
+                onclick="editor.setValue('')"
+                style="margin-left: 30px;">清空
         </button>
 
         <button class="layui-btn"
                 style="margin-left: 30px;"
-                onclick="runEditorTest(ace.edit('editor').getValue(), getQueryString('expid'))"
-                id="run">代码执行
+                onclick="runEditorTest(editor.getValue(), getQueryString('expid'))"
+                id="run"> 代码执行
         </button>
+        <!--                onclick="runEditorTest(ace.edit('editor').getValue(), getQueryString('expid'))"-->
+
     </div>
-    <div class="" id="editor">
-    </div>
+    <br>
+<!--    <div class="" id="editor">-->
+<!--    </div>-->
+    <textarea id="code">
+
+    </textarea>
+
+
 
 
 </div>
@@ -97,22 +121,30 @@
 
 <script th:inline="javascript">
 
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        mode: "python",
+        lineNumbers: true,
+        // theme: "material",
+        indentUnit: 4
+    });
+
+
     // codeEditor('editor', '')
-    codeEditor("editor", '')
+    // codeEditor("editor", '')
 
     //获取当前页面的实验id
     var expId = getQueryString("expid");
 
 
     //学生id+实验id, 记录编辑器中的代码
-    name = [[${session.loginUser.getId()}]] + expId;
-
-    if (sessionStorage.getItem(name)) {
-        //给编辑器中填充保存的代码
-        codeEditor("editor", sessionStorage.getItem(name))
-    } else {
-        codeEditor("editor", '')
-    }
+    // name = [[${session.loginUser.getId()}]] + expId;
+    //
+    // if (sessionStorage.getItem(name)) {
+    //     //给编辑器中填充保存的代码
+    //     codeEditor("editor", sessionStorage.getItem(name))
+    // } else {
+    //     codeEditor("editor", '')
+    // }
     SysList = []
     SelfList = []
 

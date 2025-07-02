@@ -12,8 +12,8 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**","/ace-builds-master/**","/fonts/**")
-                .addResourceLocations("classpath:/static/","classpath:/static/ace-builds-master/","classpath:/static/fonts/");
+        registry.addResourceHandler("/static/**","/ace-builds-master/**","/fonts/**","/codemirror/**")
+                .addResourceLocations("classpath:/static/","classpath:/static/ace-builds-master/","classpath:/static/fonts/","classpath:/static/codemirror/");
         registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/js/");
         registry.addResourceHandler("/lib/**").addResourceLocations("classpath:/static/lib/");
         registry.addResourceHandler("/css/**").addResourceLocations("classpath:/static/css/");

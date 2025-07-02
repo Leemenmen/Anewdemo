@@ -145,7 +145,9 @@
         $.each(codes, function (i, item) {
             /* console.log(item);
              console.log(html);*/
-            str = 'stuCode/' + sname + '/' + item.codeurl;
+            // str = 'stuCode/' + item.codeurl;
+            figName = item.resulturl?.split('/stuCode')[1]?.split('_result')[0]
+            console.log(item.resulturl,figName)
             expname = '';
             if (item.expname!=null){
                 expname = item.expname
@@ -157,10 +159,10 @@
                 '                <td>' + expname + '</td>\n' +
                 '                <td>' + item.createtime + '</td>\n' +
                 '                <td> <button style="width: 150px" type="button" class="layui-btn"\n' +
-                '                    onclick="xadmin.open(\'点击预览\',\'simple_historyCodeDown.html?storagePath=' + str + '&flag=0\',900,600)">查看代码\n' +
+                '                    onclick="xadmin.open(\'点击预览\',\'simple_historyCodeDown.html?storagePath=' + item.codeurl + '&flag=0\',900,600)">查看代码\n' +
                 '            </button></td>' +
                 '                <td> <button style="width: 150px" type="button" class="layui-btn layui-bg-blue"\n' +
-                '                    onclick="xadmin.open(\'查看结果\',\'simple_allResult.html?resultUrl=' + item.resulturl + '&figCount='+item.figCount+'&csvCount='+item.csvCount+'\',900,600)">查看结果\n' +
+                '                    onclick="xadmin.open(\'查看结果\',\'simple_allResult.html?resultUrl=' + item.resulturl + '&figName='+figName+ '&figCount='+item.figCount+'&csvCount='+item.csvCount+'\',900,600)">查看结果\n' +
                 '            </button></td>\n' +
                 '            </tr>'
 

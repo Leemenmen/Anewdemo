@@ -62,23 +62,24 @@
 </body>
 
 <script th:inline="javascript">
+    codepath = getQueryString("resultUrl")
     figCount = getQueryString("figCount")
     csvCount = getQueryString("csvCount")
-    figName = getQueryString("resultUrl").substring(0, 17)
+    figName = getQueryString("figName")
     // console.log(figCount)
     // console.log(csvCount)
     // console.log(figName)
+    // console.log(codepath)
     html = '';
-    name = [[${session.loginUser.getUsername()}]] + '/' + figName;
-    codepath = 'stuCode/' + name + '_result.py'
+    // name = [[${session.loginUser.getUsername()}]] + '/' + figName;
     initEditor(editor, codepath)
 
     if (figCount > 0) {
         $("#test1").css('display', 'block')
         for (i = 0; i < figCount; i++) {
-            path = encodeURIComponent(encodeURIComponent('/stuCode/' + name + '_fig_' + i + '.png'))
+            path = encodeURIComponent(encodeURIComponent('/stuCode' + figName + '_fig_' + i + '.png'))
 
-            html += "<div style='text-align: center'><img src=\"/pictures/" + name + '_fig_' + i + '.png' + "\" /><br>" +
+            html += "<div style='text-align: center'><img src=\"/pictures" + figName + '_fig_' + i + '.png' + "\" /><br>" +
                 "<p class='layui-text' style='float: right; font-size: 16px;margin-right:4%;margin-top:1%'><a style='color: #009688' href='/downloadResult?type=0&path="+path+"'>点击下载</a>"+'&nbsp;&nbsp;' + (i + 1) + '&nbsp;/&nbsp;' + figCount + "</p>" +
 
                 "</div>"
@@ -93,7 +94,7 @@
         $("#dataset").css('display', 'block')
         tableHtml = '';
         for (j = 0; j < csvCount; j++) {
-            csvPath = encodeURIComponent(encodeURIComponent("/stuCode/" + name + '_csv_' + j + '.csv'))
+            csvPath = encodeURIComponent(encodeURIComponent("/stuCode/" + figName + '_csv_' + j + '.csv'))
             // $.get("/readCsv?csvPath=" + csvPath,function (res){
             //     // console.log(res)
             //

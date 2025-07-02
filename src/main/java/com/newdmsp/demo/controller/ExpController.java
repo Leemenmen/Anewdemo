@@ -318,16 +318,15 @@ public class ExpController {
     }
 
 
-
     @RequestMapping(value = "/addExpStep1", method = RequestMethod.POST)
     @ResponseBody
     @ExceptionHandler
     public Result addUploadRecord1(Exp exp,
-                                  @ApiParam(value = "上传文件", required = true) MultipartFile[] files, MultipartFile file, MultipartFile docFile, MultipartFile mp4File,Integer dataTag, HttpServletRequest request) {
+                                   @ApiParam(value = "上传文件", required = true) MultipartFile[] files, MultipartFile file, MultipartFile docFile, MultipartFile mp4File, Integer dataTag, HttpServletRequest request) {
 
 //        Map<String,Object> resultMap = new HashMap<String,Object>();
 
-        try{
+        try {
 
             log.info(String.valueOf(exp));
 
@@ -365,15 +364,15 @@ public class ExpController {
 
 
             // 新增试实验明细记录
-            int index =  expService.addExpStep(exp);
+            int index = expService.addExpStep(exp);
 
             log.info(String.valueOf(exp));
 
 
-            if (index>0){
-                if (dataTag == 1){
+            if (index > 0) {
+                if (dataTag == 1) {
                     for (MultipartFile dataFile : files) {
-                        DataSet dataSet  = new DataSet();
+                        DataSet dataSet = new DataSet();
                         dataSet.setExpName(exp.getExpname());
                         dataSet.setExpId(exp.getId());
                         dataSet.setDataPath(dataFile.getOriginalFilename());
@@ -387,7 +386,7 @@ public class ExpController {
 //                resultMap.put("code",200);
 //                resultMap.put("msg","上传成功");
 
-            }else {
+            } else {
 //                resultMap.put("code",300);
 //                resultMap.put("msg","上传失败");
                 return ResultUtil.unSuccess();
@@ -407,16 +406,15 @@ public class ExpController {
     }
 
 
-
     @RequestMapping(value = "/addExpStep", method = RequestMethod.POST)
     @ResponseBody
     @ExceptionHandler
     public Result addUploadRecord(Exp exp,
-                                  @ApiParam(value = "上传文件", required = true) MultipartFile[] files, MultipartFile[] file, MultipartFile docFile,Integer dataTag, HttpServletRequest request) {
+                                  @ApiParam(value = "上传文件", required = true) MultipartFile[] files, MultipartFile[] file, MultipartFile docFile, Integer dataTag, HttpServletRequest request) {
 
 //        Map<String,Object> resultMap = new HashMap<String,Object>();
 
-        try{
+        try {
 
             log.info(String.valueOf(exp));
             log.info(String.valueOf(file.length));
@@ -471,15 +469,15 @@ public class ExpController {
 
 
             // 新增试实验明细记录
-            int index =  expService.addExpStep(exp);
+            int index = expService.addExpStep(exp);
 
             log.info(String.valueOf(exp));
 
 
-            if (index>0){
-                if (dataTag == 1){
+            if (index > 0) {
+                if (dataTag == 1) {
                     for (MultipartFile dataFile : files) {
-                        DataSet dataSet  = new DataSet();
+                        DataSet dataSet = new DataSet();
                         dataSet.setExpName(exp.getExpname());
                         dataSet.setExpId(exp.getId());
                         dataSet.setDataPath(dataFile.getOriginalFilename());
@@ -493,7 +491,7 @@ public class ExpController {
 //                resultMap.put("code",200);
 //                resultMap.put("msg","上传成功");
 
-            }else {
+            } else {
 //                resultMap.put("code",300);
 //                resultMap.put("msg","上传失败");
                 return ResultUtil.unSuccess();
@@ -511,7 +509,6 @@ public class ExpController {
 
 
     }
-
 
 
     @ApiOperation(value = "新增实验", notes = "1. 设置上传路径; 2. 补充上传者id, 实验代码名称, 创建时间; 3. 文件上传、数据库新增记录")
@@ -663,52 +660,45 @@ public class ExpController {
 
 //            log.info(context);
             User user = (User) session.getAttribute("loginUser");
-            // 父目录不存在新建
-            String parentDir = ROOT_PATH + "/stuCode/";
+
+            // 获取当前日期，格式为年月日
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+            String currentDate = dateFormat.format(new Date());
+            String currentDir = "/stuCode/" + currentDate + "/" + user.getUsername() + "/";
+
+            // 执行代码、结果保存路径
+            String parentDir = ROOT_PATH + currentDir;
             if (!new File(parentDir).exists()) {
                 new File(parentDir).mkdirs();
             }
             // 历史代码文件名
-            String RandomFilename = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(new Date());
+            String RandomFilename = new SimpleDateFormat("HHmmss").format(new Date());
 
             history.setExpId(Integer.valueOf(expId));
             history.setSid(user.getId());
             history.setSname(user.getUsername());
-            history.setCodeurl(RandomFilename + "_code.py");
-            history.setResulturl(RandomFilename + "_result.py");
-//            log.info("===history==="+history);
-            // 子目录不存在则新建
-            String path = parentDir + user.getUsername() + "/";
-            File newFile = new File(path);
-            // 判断路径是否存在
-            if (!newFile.exists()) {
-                //不存在创建路径
-                newFile.mkdirs();
-            }
-//
-//            String str = "import sys\n" +
-//                    " \n" +
-//                    "sys.stdout = open('"+path+RandomFilename + "_result.py', mode = 'w',encoding='utf-8')\n";
+            history.setCodeurl(currentDir + RandomFilename + "_code.py");
+            history.setResulturl(currentDir + RandomFilename + "_result.py");
 
-            // 写入历史代码到文件
-            BufferedWriter out = new BufferedWriter(new FileWriter(path + RandomFilename + "_code.py"));
-            // 写入历史代码到文件
-            BufferedWriter out1 = new BufferedWriter(new FileWriter(path + RandomFilename + "_0_code.py"));
+
+            // 写入历史代码到文件，用户输入的代码
+            BufferedWriter out = new BufferedWriter(new FileWriter(parentDir + RandomFilename + "_code.py"));
+            // 写入历史代码到文件，如果用户输入的代码中包含图片、csv文件，则将保存路径处理后
+            BufferedWriter out1 = new BufferedWriter(new FileWriter(parentDir + RandomFilename + "_0_code.py"));
             out.write(context);
             out.close();
 
 //            String newContext = Replace("show\\(.*?\\)", context, "F:/project/Anewdemo/stuCode/" + user.getUsername() + "/" + RandomFilename + "_fig");
 //            String newContext = Replace("show\\(.*?\\)", context, "/opt/pubWebPro/stuCode/" + user.getUsername() + "/" + RandomFilename + "_fig");
-            String baseDir = ROOT_PATH+ "/stuCode/";
-//            String baseDir = "/opt/pubWebPro/stuCode/";
+//            String baseDir = ROOT_PATH+ "/stuCode/";
 
             String figCompile = "show\\(.*?\\)";
-            String figPicName = baseDir + user.getUsername() + "/" + RandomFilename + "_fig";
+            String figPicName = parentDir + RandomFilename + "_fig";
             Map<String, String> figContext = Replace(figCompile, context, "savefig('" + figPicName, ".png')");
             String figCount = figContext.get("count");
 
             String csvCompile = "\\.to_csv\\(.+['|\"]";
-            String csvPicName = baseDir + user.getUsername() + "/" + RandomFilename + "_csv";
+            String csvPicName = parentDir + RandomFilename + "_csv";
             Map<String, String> csvContext = Replace(csvCompile, figContext.get("newContext"), ".to_csv('" + csvPicName, ".csv'");
             String figCsvContext = csvContext.get("newContext");
             String csvCout = csvContext.get("count");
@@ -719,7 +709,7 @@ public class ExpController {
             // 记录运行结果
             StringBuilder result = new StringBuilder();
             // 执行python代码
-            Process pr = Runtime.getRuntime().exec("python " + path + RandomFilename + "_0_code.py");
+            Process pr = Runtime.getRuntime().exec("python " + parentDir + RandomFilename + "_0_code.py");
             // 记录执行结果
             BufferedReader in = new BufferedReader(new
                     InputStreamReader(pr.getInputStream(), "GB2312"));
@@ -770,20 +760,20 @@ public class ExpController {
             }
             // 代码运行结果写入结果文件中
 //            writeResult(result, path, RandomFilename);
-            BufferedWriter outResult = new BufferedWriter(new FileWriter(path + RandomFilename + "_result.py"));
+            BufferedWriter outResult = new BufferedWriter(new FileWriter(parentDir + RandomFilename + "_result.py"));
             outResult.write(String.valueOf(result));
             outResult.close();
 
             history.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             int cf = 0;
             int pf = 0;
-            for (int c=0; c < Integer.parseInt(csvCout); c++) {
-                if (new File(path + RandomFilename + "_csv_" + c + ".csv").exists()) {
-                    cf ++ ;
+            for (int c = 0; c < Integer.parseInt(csvCout); c++) {
+                if (new File(parentDir + RandomFilename + "_csv_" + c + ".csv").exists()) {
+                    cf++;
                 }
             }
-            for (int p=0; p < Integer.parseInt(figCount); p++) {
-                if (new File(path + RandomFilename + "_fig_" + p + ".png").exists()) {
+            for (int p = 0; p < Integer.parseInt(figCount); p++) {
+                if (new File(parentDir + RandomFilename + "_fig_" + p + ".png").exists()) {
                     pf++;
                 }
             }
@@ -799,8 +789,9 @@ public class ExpController {
 
 //            i = 0;
 //            runResult.setFigName(RandomFilename + "_fig");
-            runResult.setFigName(RandomFilename);
-            runResult.setCodeName("stuCode/" + user.getUsername() + "/" + RandomFilename + "_result.py");
+            runResult.setFigName("/"+currentDate + "/" + user.getUsername() + "/" + RandomFilename);
+//            runResult.setCodeName("stuCode/" + user.getUsername() + "/" + RandomFilename + "_result.py");
+            runResult.setCodeName(currentDir + RandomFilename + "_result.py");
 
             // 历史记录表中添加一条新的记录
             int num = expService.addHistory(history);
@@ -818,7 +809,7 @@ public class ExpController {
     @GetMapping("/expDataSets/{expId}")
     @ResponseBody
     public Result getExpDataSETS(@PathVariable Integer expId) {
-        try{
+        try {
             Result result = new Result();
             List<Exp> expDatas = expService.getExpDataSets(expId);
             result.setTotal(expDatas.size());
@@ -826,7 +817,7 @@ public class ExpController {
             result.setCode(200);
             return ResultUtil.success(result);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResultUtil.unSuccess(String.valueOf(e));
         }
 

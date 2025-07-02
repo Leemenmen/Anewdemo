@@ -330,32 +330,80 @@ public class FileController {
         return newStrJoin.split(",");
     }
 
+    // 获取文件后缀的方法
+    public String getFileExtension(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return "";
+        }
+        int dotIndex = filePath.lastIndexOf('.');
+        if (dotIndex == -1 || dotIndex == filePath.length() - 1) {
+            return ""; // 没有后缀或后缀为空
+        }
+        return filePath.substring(dotIndex + 1).toLowerCase(); // 转为小写
+    }
+    // 根据文件后缀设置 Content-Type
+    public  String getContentType(String fileExtension) {
+        switch (fileExtension) {
+            case "txt":
+                return "text/plain";
+            case "pdf":
+                return "application/pdf";
+            case "doc":
+            case "docx":
+                return "application/msword";
+            case "xls":
+            case "xlsx":
+                return "application/vnd.ms-excel";
+            case "csv":
+                return "text/csv";
+            case "jpg":
+            case "jpeg":
+                return "image/jpeg";
+            case "png":
+                return "image/png";
+            case "gif":
+                return "image/gif";
+            case "zip":
+                return "application/zip";
+            case "mp3":
+                return "audio/mpeg";
+            case "mp4":
+                return "video/mp4";
+            default:
+                return "application/octet-stream"; // 默认类型
+        }
+    }
 
     @GetMapping("/downloadResult")
     public void download2(@RequestParam("path") String file, @RequestParam("type") String type, HttpServletResponse response) throws UnsupportedEncodingException {
 
-        try {
+        // 使用 Paths 拼接路径
+        String filePath = Paths.get(ROOT_PATH, URLDecoder.decode(file, "UTF-8")).toString();
 
-//            log.info(file);
-            String filePath = ROOT_PATH + URLDecoder.decode(file, "UTF-8");
-            ;
-//            log.info(filePath);
-            InputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
-            String fileName = file;
-            fileName = URLEncoder.encode(fileName, "UTF-8");
-            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
-            response.setContentType("multipart/form-data");
-            BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
-            if (Integer.parseInt(type) == 1) {
-                out.write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF});
-            }
-            int len = 0;
-            while ((len = bis.read()) != -1) {
-                out.write(len);
-                out.flush();
-            }
-            out.close();
-            bis.close();
+        try {
+            // 使用 File 类获取文件名
+            File fileObject = new File(filePath);
+            if(fileObject.exists()){
+                //            log.info(filePath);
+                InputStream bis = new BufferedInputStream(new FileInputStream(fileObject));
+
+                String fileName = fileObject.getName();
+                fileName = URLEncoder.encode(fileName, "UTF-8");
+                response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+                response.setContentType(getContentType(getFileExtension(fileName)));
+                BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+                if (Integer.parseInt(type) == 1) {
+                    out.write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF});
+                }
+                int len = 0;
+                while ((len = bis.read()) != -1) {
+                    out.write(len);
+                    out.flush();
+                }
+                out.close();
+                bis.close();
+            }else log.info("找不到文件", filePath);
+
 
         } catch (Exception e) {
             e.printStackTrace();
