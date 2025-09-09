@@ -16,10 +16,13 @@
     <script type="text/javascript" src="/js/new.js"></script>
     <script src="/lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="/js/xadmin.js"></script>
-<!--    <script type="text/javascript" src="/ace-builds-master/src-noconflict/ace.js"></script>-->
-<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.52.0/lib/codemirror.css">-->
-<!--    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.0/lib/codemirror.js"></script>-->
-<!--    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.0/mode/python/python.js"></script>-->
+    <!--    <script type="text/javascript" src="/ace-builds-master/src-noconflict/ace.js"></script>-->
+    <!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.52.0/lib/codemirror.css">-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.0/lib/codemirror.js"></script>-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.0/mode/python/python.js"></script>-->
+
+    <script src="/pyodide/pyodide.js"></script>
+
 
     <script type="text/javascript" src="/codemirror/lib/codemirror.js"></script>
     <link rel="stylesheet" type="text/css" href="/codemirror/lib/codemirror.css">
@@ -34,7 +37,8 @@
             left: 10px;
             right: 10px;
         }
-        .CodeMirror{
+
+        .CodeMirror {
             font-size: 20px;
             min-height: 50vh;
             max-height: 85vh;
@@ -49,7 +53,7 @@
     <div class="layui-form layui-form-item">
         <label class="layui-form-label" style="width: 100px;font-size: 14px">使用数据集：</label>
         <div class="layui-input-inline" style="width: 660px">
-            <input type="radio" name="level" lay-filter="levelM" value="0" title="是" >
+            <input type="radio" name="level" lay-filter="levelM" value="0" title="是">
             <input type="radio" name="level" lay-filter="levelM" value="1" title="否" checked>
         </div>
     </div>
@@ -61,9 +65,9 @@
             <div id="demo" class="xm-select-demo layui-inline" style="width: 250px"></div>
 
             <!--            <div class="layui-form layui-inline" lay-filter="myDiv" style="width: 25%;">-->
-<!--                <select id="dataNow" lay-filter="mySelect" lay-search>-->
-<!--                </select>-->
-<!--            </div>-->
+            <!--                <select id="dataNow" lay-filter="mySelect" lay-search>-->
+            <!--                </select>-->
+            <!--            </div>-->
 
 
             <div class="layui-form layui-inline" id="upload" style="margin-left: 20px">
@@ -72,27 +76,28 @@
                         class="layui-icon"></i>点击上传
                 </button>
                 <p class="layui-text" id="fileName"></p>
-<!--                            <button class="layui-upload" id="test10"-->
-<!--                                    style="width: 65%;height: 100px;text-align: center">-->
-<!--                                <i class="layui-icon"></i>-->
-<!--                                                <p style="font-size: 16px">点击或拖拽到此处上传数据集</p>-->
-<!--                            </button>-->
+                <!--                            <button class="layui-upload" id="test10"-->
+                <!--                                    style="width: 65%;height: 100px;text-align: center">-->
+                <!--                                <i class="layui-icon"></i>-->
+                <!--                                                <p style="font-size: 16px">点击或拖拽到此处上传数据集</p>-->
+                <!--                            </button>-->
             </div>
         </div>
 
         <div class="layui-text">
             <br>
             <p>注意:&nbsp;&nbsp;可用数据集中<br>
-            系统数据集路径为：/opt/pubWebPro/dataSets/文件名<br>
-            上传数据集路径为：/opt/pubWebPro/selfDataset/<span th:text="${session.loginUser.getId()}"></span>/文件名<p>
+                系统数据集路径为：/opt/pubWebPro/dataSets/文件名<br>
+                上传数据集路径为：/opt/pubWebPro/selfDataset/<span th:text="${session.loginUser.getId()}"></span>/文件名
+            <p>
         </div>
 
     </div>
     <div id="buttons" style="margin-top: 3%">
-<!--        <button class="layui-btn"-->
-<!--                onclick="saveCode(ace.edit('editor').getValue())"-->
-<!--                style="margin-left: 30px;">保存-->
-<!--        </button>-->
+        <!--        <button class="layui-btn"-->
+        <!--                onclick="saveCode(ace.edit('editor').getValue())"-->
+        <!--                style="margin-left: 30px;">保存-->
+        <!--        </button>-->
         <button class="layui-btn"
                 onclick="editor.setValue('')"
                 style="margin-left: 30px;">清空
@@ -100,26 +105,30 @@
 
         <button class="layui-btn"
                 style="margin-left: 30px;"
-                onclick="runEditorTest(editor.getValue(), getQueryString('expid'))"
+                onclick="runEditorTest1(editor.getValue(), getQueryString('expid'))"
                 id="run"> 代码执行
         </button>
         <!--                onclick="runEditorTest(ace.edit('editor').getValue(), getQueryString('expid'))"-->
 
     </div>
     <br>
-<!--    <div class="" id="editor">-->
-<!--    </div>-->
+    <!--    <div class="" id="editor">-->
+    <!--    </div>-->
     <textarea id="code">
 
     </textarea>
-
-
+    <pre id="output" style="margin:20px 0 0 30px; padding:10px; background:#f5f5f5; min-height:120px;"></pre>
 
 
 </div>
 </body>
+<script>
+
+
+</script>
 
 <script th:inline="javascript">
+
 
     var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         mode: "python",
@@ -131,6 +140,98 @@
 
     // codeEditor('editor', '')
     // codeEditor("editor", '')
+
+    /* ========== 初始化 Pyodide ========== */
+    let pyodideReady = false;
+    let pyodide;
+
+    async function loadPyodideAndPackages() {
+        pyodide = await loadPyodide({
+            stdout: (t) => {},   // 我们自己接管输出
+            stderr: (t) => {},
+        });
+
+        // 1. 安装常用包
+        await pyodide.loadPackage([
+            "matplotlib",
+            "numpy",
+            "pandas",
+            "scikit-learn",
+            "pyodide-http"   // 让 pandas.read_csv 能直接读 url
+        ]);
+
+        // 2. 挂载虚拟目录 /uploads（用户后面上传文件就丢到这里）
+        pyodide.FS.mkdir("/uploads");
+        pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, {}, "/uploads");
+
+        // 3. 设置 matplotlib 后端 → browser canvas
+        pyodide.runPython(`
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import sklearn
+import io, sys, traceback
+`);
+
+        pyodideReady = true;
+    }
+
+    loadPyodideAndPackages();
+
+    /******************************************************************
+     * 运行按钮调用的主函数
+     ******************************************************************/
+    async function runEditorTest1(code, expid) {
+        const outBox = document.getElementById("output");
+        if (!pyodideReady) {
+            outBox.textContent = "Pyodide 还在加载，请稍候…";
+            return;
+        }
+        if (!code.trim()) {
+            outBox.textContent = "编辑器为空！";
+            return;
+        }
+
+        // 清空上次结果
+        outBox.innerHTML = "";
+
+        try {
+            // 捕获 stdout / stderr
+            pyodide.runPython(`
+stdout_capture = io.StringIO()
+stderr_capture = io.StringIO()
+sys.stdout = stdout_capture
+sys.stderr = stderr_capture
+`);
+
+            // 真正执行用户代码（支持 top-level await）
+            await pyodide.runPythonAsync(code);
+
+            // 把 stdout 回写页面
+            const stdout = pyodide.runPython("stdout_capture.getvalue()");
+            if (stdout) {
+                const pre = document.createElement("pre");
+                pre.textContent = stdout;
+                outBox.appendChild(pre);
+            }
+
+            // 如果没有任何输出，也没有图片，则提示
+            if (!stdout && !outBox.querySelector("canvas")) {
+                outBox.insertAdjacentText("beforeend", "（程序无输出）");
+            }
+        } catch (err) {
+            // 捕获 Python 异常 + 栈
+            const stderr = pyodide.runPython("stderr_capture.getvalue()");
+            outBox.insertAdjacentText("beforeend", "报错：\n" + (stderr || err));
+        } finally {
+            // 恢复默认流
+            pyodide.runPython(`
+sys.stdout = sys.__stdout__
+sys.stderr = sys.__stderr__
+`);
+        }
+    }
 
     //获取当前页面的实验id
     var expId = getQueryString("expid");
@@ -150,17 +251,17 @@
 
     var demo = xmSelect.render({
         el: '#demo',
-        model: { label: { type: 'text' } },
+        model: {label: {type: 'text'}},
         clickClose: true,
         filterable: true,
         tree: {
             show: true,
             strict: false,
-            expandedKeys: [ -1 ],
+            expandedKeys: [-1],
         },
-        on: function(data){
+        on: function (data) {
             // console.log(data)
-            if(data.isAdd){
+            if (data.isAdd) {
                 return data.change.slice(0, 1)
             }
         },
@@ -171,9 +272,9 @@
         if (res.code === 200) {
             // console.log(res)
             $.each(res.datas, function (i, item) {
-                if (item.expId === 0){
-                   SelfList.push({name: item.dataPath, value: item.id})
-                }else{
+                if (item.expId === 0) {
+                    SelfList.push({name: item.dataPath, value: item.id})
+                } else {
                     SysList.push({name: item.dataPath, value: item.id})
                 }
                 demo.update({
@@ -185,52 +286,52 @@
             })
         }
     })
-    layui.use(['form','upload'], function () {
+    layui.use(['form', 'upload'], function () {
         var form = layui.form,
             upload = layui.upload
         form.render("select")
         //此处即为 radio 的监听事件
-        form.on('radio(levelM)', function(data){
+        form.on('radio(levelM)', function (data) {
 
             var level = data.value;//被点击的radio的value值
-            if (level === '0'){
-                $("#dataSets").css('display','block')
-            }else {
-                $("#dataSets").css('display','none')
+            if (level === '0') {
+                $("#dataSets").css('display', 'block')
+            } else {
+                $("#dataSets").css('display', 'none')
             }
 
         });
 
         upload.render({
-            elem:'#test10'
-            ,accept: 'file'
-            ,exts: 'xlsx|xls|csv'
-            ,type: 'post'
-            ,auto: false
-            ,url:'/selfDataset/'+[[${session.loginUser.getId()}]]+'/0'
-            ,choose: function (obj){
-                obj.preview(function(index, file, result){
+            elem: '#test10'
+            , accept: 'file'
+            , exts: 'xlsx|xls|csv'
+            , type: 'post'
+            , auto: false
+            , url: '/selfDataset/' + [[${session.loginUser.getId()}]] + '/0'
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
                     // console.log(file);            //file表示文件信息，result表示文件src地址
                     // 空文件的size为6602
-                   if (file.size<=6602){
+                    if (file.size <= 6602) {
 
-                       // console.log("空白")
-                       layer.msg("文件不能为空白文件", {icon:2})
-                       return false
-                   }else {
-                       obj.upload(index,file)
-                   }
+                        // console.log("空白")
+                        layer.msg("文件不能为空白文件", {icon: 2})
+                        return false
+                    } else {
+                        obj.upload(index, file)
+                    }
 
                 });
             }
-            ,before: function (obj){
-                layer.load(2,{time:100})
+            , before: function (obj) {
+                layer.load(2, {time: 100})
             }
-            ,done: function (res){
-                if (res.code === 200){
+            , done: function (res) {
+                if (res.code === 200) {
                     // console.log(res)
-                    $("#fileName").html("数据集名为："+res.data)
-                    layer.msg("上传成功，可以使用该数据集",{icon:1})
+                    $("#fileName").html("数据集名为：" + res.data)
+                    layer.msg("上传成功，可以使用该数据集", {icon: 1})
                 }
             }
         })

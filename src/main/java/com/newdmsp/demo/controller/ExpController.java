@@ -22,10 +22,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.newdmsp.demo.utils.Config.ROOT_PATH;
 
@@ -678,7 +681,57 @@ public class ExpController {
             history.setSid(user.getId());
             history.setSname(user.getUsername());
             history.setCodeurl(currentDir + RandomFilename + "_code.py");
-            history.setResulturl(currentDir + RandomFilename + "_result.py");
+            history.setResulturl(currentDir + RandomFilename + "_result.txt");
+
+
+            // 创建临时目录和文件
+            String codePath = parentDir + RandomFilename + "_code.py";
+            String outputPath = parentDir + RandomFilename + "_result.txt";
+
+            // 写入用户代码到文件
+            Files.write(Paths.get(codePath), context.getBytes(StandardCharsets.UTF_8));
+            // 创建空的输出文件
+            Files.createFile(Paths.get(outputPath));
+
+//            // 2. 构造命令
+//            String[] dockerCmd = {
+//                    "docker", "run", "--rm",                // 启动并退出后自动删除容器
+//                    "-v", codePath + ":/app/code.py:ro",    // 只读挂载脚本
+//                    "-v", outputPath + ":/app/output.txt",  // 可写挂载结果
+//                    "python:alpine",                        // 镜像
+//                    "sh", "-c",                             // 下面是一段 shell 命令
+//                    "python /app/code.py > /app/output.txt 2>&1"  // 把 stdout+stderr 都重定向到文件
+//            };
+//
+//            // 3. 启动进程
+//            ProcessBuilder pb = new ProcessBuilder(dockerCmd);
+//            pb.redirectErrorStream(true);          // 把 Docker 自己的 stdout+stderr 合并，方便查看
+//            Process pr1 = pb.start();
+//
+//            // 4. 一次性读取 Docker 本身打出的日志（可选，调试用）
+//            String dockerLog;
+//            try (BufferedReader br =
+//                         new BufferedReader(new InputStreamReader(pr1.getInputStream()))) {
+//                dockerLog = br.lines().collect(Collectors.joining("\n"));
+//            }
+//
+//            // 5. 等待结束并拿退出码
+//            int exitCode = pr1.waitFor();
+//
+//            // 6. 读取容器写到 outputPath 的结果
+//            String result_docker = new String(Files.readAllBytes(Paths.get(outputPath)));
+//
+//            // 7. 判定成功/失败
+//            if (exitCode == 0) {
+//                System.out.println(">>> Docker 执行成功");
+//                System.out.println(result_docker);
+//            } else {
+//                System.out.println(">>> Docker 执行失败，退出码 = " + exitCode);
+//                System.out.println(">>> 容器内输出：");
+//                System.out.println(result_docker);
+//                System.out.println(">>> Docker 自身日志：");
+//                System.out.println(dockerLog);
+//            }
 
 
             // 写入历史代码到文件，用户输入的代码
@@ -789,7 +842,7 @@ public class ExpController {
 
 //            i = 0;
 //            runResult.setFigName(RandomFilename + "_fig");
-            runResult.setFigName("/"+currentDate + "/" + user.getUsername() + "/" + RandomFilename);
+            runResult.setFigName("/" + currentDate + "/" + user.getUsername() + "/" + RandomFilename);
 //            runResult.setCodeName("stuCode/" + user.getUsername() + "/" + RandomFilename + "_result.py");
             runResult.setCodeName(currentDir + RandomFilename + "_result.py");
 
@@ -802,6 +855,7 @@ public class ExpController {
             }
 
         } catch (Exception e) {
+            log.info(String.valueOf(e));
             return ResultUtil.error(e);
         }
     }

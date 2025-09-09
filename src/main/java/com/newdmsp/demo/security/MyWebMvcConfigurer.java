@@ -18,6 +18,8 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
         registry.addResourceHandler("/lib/**").addResourceLocations("classpath:/static/lib/");
         registry.addResourceHandler("/css/**").addResourceLocations("classpath:/static/css/");
         registry.addResourceHandler("/images/**").addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/pyodide/**").addResourceLocations("classpath:/static/pyodide/");
+
         registry.addResourceHandler("/pictures/**").addResourceLocations("file:///"+ROOT_PATH+"/stuCode/");
         registry.addResourceHandler("/resultPic/**").addResourceLocations("file:///"+ROOT_PATH+"/");
 //
